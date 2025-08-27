@@ -1,0 +1,137 @@
+/* Estilos para sistema de notificações */
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    max-width: 400px;
+    min-width: 300px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left: 4px solid #28a745;
+    background: #d4edda;
+    color: #155724;
+}
+
+.notification.error {
+    border-left: 4px solid #dc3545;
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.notification.warning {
+    border-left: 4px solid #ffc107;
+    background: #fff3cd;
+    color: #856404;
+}
+
+.notification.info {
+    border-left: 4px solid #17a2b8;
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+.notification-message {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Tema escuro */
+.dark-theme .notification {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+}
+
+.dark-theme .notification.success {
+    background: #1a202c;
+    border-left-color: #48bb78;
+    color: #9ae6b4;
+}
+
+.dark-theme .notification.error {
+    background: #1a202c;
+    border-left-color: #f56565;
+    color: #feb2b2;
+}
+
+.dark-theme .notification.warning {
+    background: #1a202c;
+    border-left-color: #ed8936;
+    color: #fbd38d;
+}
+
+.dark-theme .notification.info {
+    background: #1a202c;
+    border-left-color: #4299e1;
+    color: #90cdf4;
+}
+
+/* Animações para múltiplas notificações */
+.notification:nth-child(2) {
+    top: 90px;
+}
+
+.notification:nth-child(3) {
+    top: 160px;
+}
+
+.notification:nth-child(4) {
+    top: 230px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        min-width: auto;
+    }
+}

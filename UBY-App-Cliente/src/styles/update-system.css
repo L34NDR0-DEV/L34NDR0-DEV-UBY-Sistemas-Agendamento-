@@ -1,0 +1,494 @@
+/**
+ * Estilos Modernos para Sistema de Atualização
+ * Design responsivo e profissional
+ */
+
+/* Container principal do sistema de atualização */
+#update-system-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.update-system-hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+}
+
+.update-system-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+/* Modal de atualização */
+.update-modal {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    border-radius: 20px;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.8);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.update-system-hidden .update-modal {
+    transform: translateY(-20px);
+}
+
+/* Cabeçalho do modal */
+.update-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+}
+
+.update-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.update-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+}
+
+.update-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    flex: 1;
+}
+
+.update-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.update-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.update-close svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+}
+
+/* Conteúdo do modal */
+.update-content {
+    padding: 32px 24px;
+}
+
+/* Status da atualização */
+.update-status {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.status-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.status-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #64748b;
+}
+
+.status-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #334155;
+    flex: 1;
+}
+
+/* Detalhes da atualização */
+.update-details {
+    margin-bottom: 24px;
+}
+
+.version-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.current-version,
+.latest-version {
+    padding: 16px;
+    background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.current-version span,
+.latest-version span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.current-version strong,
+.latest-version strong {
+    font-size: 18px;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.latest-version {
+    background: linear-gradient(145deg, #ecfdf5, #d1fae5);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.latest-version strong {
+    color: #059669;
+}
+
+/* Notas de lançamento */
+.release-notes {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.release-notes h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#release-notes-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #64748b;
+    white-space: pre-wrap;
+}
+
+/* Barra de progresso */
+.update-progress {
+    margin-bottom: 24px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* Ações do modal */
+.update-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    min-width: 140px;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.btn-secondary {
+    background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+    color: #475569;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
+    transform: translateY(-1px);
+}
+
+.btn-primary svg,
+.btn-secondary svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Botão de acesso rápido */
+.update-quick-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 
+        0 8px 25px rgba(102, 126, 234, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    position: relative;
+}
+
+.update-quick-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 12px 35px rgba(102, 126, 234, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.quick-button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-button-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: white;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.quick-button-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Estados de loading */
+.status-icon svg[stroke="currentColor"] {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+    .update-modal {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .update-header {
+        padding: 20px;
+    }
+    
+    .update-content {
+        padding: 24px 20px;
+    }
+    
+    .version-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .update-actions {
+        flex-direction: column;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+    
+    .update-quick-button {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .quick-button-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Tema escuro (opcional) */
+@media (prefers-color-scheme: dark) {
+    .update-modal {
+        background: linear-gradient(145deg, #1e293b, #0f172a);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    
+    .update-status {
+        background: linear-gradient(145deg, #334155, #1e293b);
+        border-color: rgba(148, 163, 184, 0.1);
+    }
+    
+    .status-text {
+        color: #e2e8f0;
+    }
+    
+    .current-version,
+    .latest-version {
+        background: linear-gradient(145deg, #334155, #1e293b);
+        border-color: rgba(148, 163, 184, 0.1);
+    }
+    
+    .current-version strong,
+    .latest-version strong {
+        color: #f1f5f9;
+    }
+    
+    .release-notes {
+        background: #334155;
+        border-color: rgba(148, 163, 184, 0.1);
+    }
+    
+    .release-notes h4 {
+        color: #cbd5e1;
+    }
+    
+    #release-notes-content {
+        color: #94a3b8;
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(145deg, #334155, #1e293b);
+        color: #e2e8f0;
+        border-color: rgba(148, 163, 184, 0.2);
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(145deg, #475569, #334155);
+    }
+}

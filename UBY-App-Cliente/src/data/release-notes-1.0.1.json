@@ -1,0 +1,59 @@
+{
+  "version": "1.0.1",
+  "releaseDate": "2025-01-17",
+  "title": "Atualização 1.0.1 - Melhorias e Correções",
+  "description": "Esta atualização traz melhorias importantes no sistema de atualizações e correções de bugs.",
+  "features": [
+    {
+      "title": "🔄 Sistema de Atualização Modernizado",
+      "description": "Implementação de um novo sistema de atualização com interface moderna e verificação automática via GitHub."
+    },
+    {
+      "title": "🎨 Interface de Atualização Aprimorada",
+      "description": "Nova interface visual para o sistema de atualizações com design responsivo e ícones profissionais."
+    },
+    {
+      "title": "🔔 Notificações de Atualização",
+      "description": "Sistema de notificações nativas do Windows para alertar sobre novas versões disponíveis."
+    },
+    {
+      "title": "⚡ Verificação Automática",
+      "description": "Verificação automática de atualizações em segundo plano a cada 30 minutos."
+    }
+  ],
+  "improvements": [
+    {
+      "title": "🛠️ Estabilidade Geral",
+      "description": "Melhorias na estabilidade do sistema e correções de bugs menores."
+    },
+    {
+      "title": "📱 Responsividade",
+      "description": "Interface mais responsiva e adaptável a diferentes resoluções de tela."
+    },
+    {
+      "title": "🔧 Configurações Avançadas",
+      "description": "Novas opções de configuração para personalizar o comportamento das atualizações."
+    }
+  ],
+  "bugFixes": [
+    {
+      "title": "🐛 Correção de Erros de Inicialização",
+      "description": "Resolvidos problemas relacionados à inicialização da aplicação em alguns sistemas."
+    },
+    {
+      "title": "🔄 Melhorias no Sistema de Logs",
+      "description": "Aprimoramento do sistema de logs para melhor diagnóstico de problemas."
+    }
+  ],
+  "technicalDetails": {
+    "compatibility": "Windows 10 e 11",
+    "requirements": "Node.js 16.0.0 ou superior",
+    "size": "~85MB",
+    "installTime": "2-3 minutos"
+  },
+  "notes": [
+    "Esta atualização é recomendada para todos os usuários.",
+    "O sistema será reiniciado automaticamente após a instalação.",
+    "Seus dados e configurações serão preservados durante a atualização."
+  ]
+}

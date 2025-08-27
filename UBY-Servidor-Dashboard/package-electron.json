@@ -1,0 +1,75 @@
+{
+  "name": "servidor",
+  "version": "1.0.1",
+  "description": "Servidor WebSocket simples e funcional com dashboard de monitoramento.",
+  "main": "src/main.js",
+  "homepage": "./",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "dist": "npm run build",
+    "pack": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win:legacy": "electron-packager . servidor --platform=win32 --arch=x64 --out=dist/ --overwrite",
+    "build:mac:legacy": "electron-packager . servidor --platform=darwin --arch=x64 --out=dist --overwrite",
+    "build:linux:legacy": "electron-packager . servidor --platform=linux --arch=x64 --out=dist --overwrite",
+    "build:installer:legacy": "electron-installer-windows --src dist/servidor-win32-x64/ --dest dist/installer/ --config config/installer.config.json",
+    "build:run": "npm run build-win && dist/servidor-win32-x64/servidor.exe"
+  },
+  "keywords": [
+    "websocket",
+    "servidor",
+    "dashboard",
+    "electron"
+  ],
+  "author": "Desenvolvedor",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^24.0.0",
+    "electron-installer-windows": "^3.0.0",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "appId": "com.websocket.server.dashboard",
+    "productName": "WebSocket Server",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "public/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/servidor_logo.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WebSocket Server"
+    }
+  }
+}

@@ -1,0 +1,1606 @@
+/* Preloader para garantir carregamento da logo */
+.app-preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1);
+    backdrop-filter: blur(0px);
+}
+
+.app-preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95);
+    backdrop-filter: blur(10px);
+}
+
+.preloader-content {
+    text-align: center;
+    animation: preloaderFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform: translateY(20px);
+    opacity: 0;
+}
+
+.preloader-logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(255, 107, 0, 0.15);
+    border: 1px solid rgba(255, 107, 0, 0.1);
+    animation: logoFloat 1s ease-in-out infinite;
+    transition: all 0.15s ease;
+}
+
+.preloader-logo-image {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    animation: logoScale 0.8s ease-in-out infinite alternate;
+}
+
+.preloader-spinner {
+    margin: 20px auto;
+    width: 40px;
+    height: 40px;
+    position: relative;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 107, 0, 0.1);
+    border-top: 3px solid #FF6B00;
+    border-radius: 50%;
+    animation: spinSmooth 0.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    position: relative;
+}
+
+.spinner::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 2px solid transparent;
+    border-top: 2px solid rgba(255, 107, 0, 0.3);
+    border-radius: 50%;
+    animation: spinReverse 0.6s linear infinite;
+}
+
+.preloader-text {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+    margin-top: 20px;
+    animation: textPulse 0.8s ease-in-out infinite;
+}
+
+/* Tema escuro para o preloader */
+[data-theme="dark"] .app-preloader {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+}
+
+[data-theme="dark"] .preloader-text {
+    color: #ccc;
+}
+
+[data-theme="dark"] .spinner {
+    border: 2px solid #444;
+    border-top: 2px solid #FF6B00;
+}
+
+[data-theme="dark"] .preloader-logo {
+    background: rgba(40, 40, 40, 0.9);
+    box-shadow: 0 5px 15px rgba(255, 107, 0, 0.1);
+    border: 1px solid rgba(255, 107, 0, 0.2);
+}
+
+/* Tema escuro para checkboxes */
+[data-theme="dark"] .checkbox-group input[type="checkbox"] {
+    accent-color: #FF6B00;
+    background: #404040;
+    border: 1px solid #555555;
+}
+
+[data-theme="dark"] .checkbox-group label {
+    color: #cccccc;
+}
+
+[data-theme="dark"] .checkbox-group input[type="checkbox"]:checked {
+    background: #FF6B00;
+    border-color: #FF6B00;
+}
+
+[data-theme="dark"] .checkbox-group input[type="checkbox"]:focus {
+    outline: 2px solid rgba(255, 107, 0, 0.3);
+    outline-offset: 2px;
+}
+
+/* Animações do preloader */
+@keyframes spinSmooth {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+    0% { transform: rotate(360deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes logoFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1); 
+        box-shadow: 0 8px 32px rgba(255, 107, 0, 0.15);
+    }
+    50% { 
+        transform: translateY(-8px) scale(1.02); 
+        box-shadow: 0 12px 40px rgba(255, 107, 0, 0.25);
+    }
+}
+
+@keyframes logoScale {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+@keyframes preloaderFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
+}
+
+@keyframes textPulse {
+    0%, 100% { 
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ===== NOVA BARRA DE JANELA ÚNICA ===== */
+.custom-window-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: #ffffff;
+    border-bottom: 1px solid #e1e5e9;
+    z-index: 9999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 0 12px;
+    -webkit-app-region: drag;
+    user-select: none;
+}
+
+.window-title-area {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    -webkit-app-region: drag;
+}
+
+.app-window-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: #5f6368;
+    letter-spacing: 0.25px;
+    -webkit-app-region: drag;
+}
+
+.window-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    -webkit-app-region: no-drag;
+}
+
+.win-btn {
+    width: 46px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease;
+    -webkit-app-region: no-drag;
+    outline: none;
+}
+
+.win-btn svg {
+    width: 10px;
+    height: 10px;
+    color: #5f6368;
+    transition: color 0.15s ease;
+}
+
+.win-minimize:hover {
+    background-color: #f1f3f4;
+}
+
+.win-maximize:hover {
+    background-color: #f1f3f4;
+}
+
+.win-close:hover {
+    background-color: #e81123;
+}
+
+.win-close:hover svg {
+    color: #ffffff;
+}
+
+.win-btn:active {
+    transform: scale(0.95);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #FF6B00;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-app-region: no-drag;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* ===== ANIMAÇÕES DE FUNDO MODERNAS ===== */
+.background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+/* Padrão geométrico sutil */
+.background-animation::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+    opacity: 0.3;
+}
+
+.background-animation::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.02) 49%, rgba(255, 255, 255, 0.02) 51%, transparent 52%);
+    background-size: 40px 40px;
+    opacity: 0.4;
+}
+
+
+
+.floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(45deg, rgba(255, 107, 0, 0.08), rgba(255, 140, 0, 0.04));
+}
+
+.shape-1 {
+    width: 80px;
+    height: 80px;
+    top: 10%;
+    left: 10%;
+    background: linear-gradient(45deg, rgba(255, 107, 0, 0.15), rgba(255, 165, 0, 0.08));
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+}
+
+.shape-2 {
+    width: 120px;
+    height: 120px;
+    top: 60%;
+    right: 15%;
+    background: linear-gradient(45deg, rgba(236, 72, 153, 0.15), rgba(251, 113, 133, 0.08));
+    box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+}
+
+.shape-3 {
+    width: 60px;
+    height: 60px;
+    top: 30%;
+    left: 70%;
+    background: linear-gradient(45deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.08));
+    box-shadow: 0 0 18px rgba(34, 197, 94, 0.35);
+}
+
+.shape-4 {
+    width: 100px;
+    height: 100px;
+    bottom: 20%;
+    left: 20%;
+    background: linear-gradient(45deg, rgba(168, 85, 247, 0.15), rgba(196, 181, 253, 0.08));
+    box-shadow: 0 0 22px rgba(168, 85, 247, 0.4);
+}
+
+.shape-5 {
+    width: 140px;
+    height: 140px;
+    top: 5%;
+    right: 30%;
+    background: linear-gradient(45deg, rgba(59, 130, 246, 0.15), rgba(147, 197, 253, 0.08));
+    box-shadow: 0 0 28px rgba(59, 130, 246, 0.4);
+}
+
+.shape-6 {
+    width: 90px;
+    height: 90px;
+    bottom: 10%;
+    right: 10%;
+    background: linear-gradient(45deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.08));
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+}
+
+.gradient-orbs {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+    top: -200px;
+    left: -200px;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+    bottom: -250px;
+    right: -250px;
+}
+
+.orb-3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Partículas flutuantes coloridas */
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+
+.particle-1 {
+    background: #ff6b00;
+    top: 20%;
+    left: 15%;
+    box-shadow: 0 0 10px #ff6b00;
+}
+
+.particle-2 {
+    background: #ec4899;
+    top: 70%;
+    left: 80%;
+    box-shadow: 0 0 10px #ec4899;
+}
+
+.particle-3 {
+    background: #3b82f6;
+    top: 40%;
+    left: 25%;
+    box-shadow: 0 0 10px #3b82f6;
+}
+
+.particle-4 {
+    background: #22c55e;
+    top: 80%;
+    left: 60%;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+.particle-5 {
+    background: #a855f7;
+    top: 15%;
+    left: 70%;
+    box-shadow: 0 0 10px #a855f7;
+}
+
+.particle-6 {
+    background: #f59e0b;
+    top: 60%;
+    left: 10%;
+    box-shadow: 0 0 10px #f59e0b;
+}
+
+.particle-7 {
+    background: #06b6d4;
+    top: 30%;
+    left: 90%;
+    box-shadow: 0 0 10px #06b6d4;
+}
+
+.particle-8 {
+    background: #ef4444;
+    top: 90%;
+    left: 30%;
+    box-shadow: 0 0 10px #ef4444;
+}
+
+
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 32px);
+    width: 100vw;
+    margin-top: 32px;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.login-content {
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(30px);
+    border-radius: 28px;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.12),
+        0 15px 30px rgba(255, 107, 0, 0.15),
+        0 8px 16px rgba(255, 107, 0, 0.1),
+        0 4px 8px rgba(255, 107, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 107, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.card-header {
+    padding: 32px 32px 16px 32px;
+    text-align: center;
+    position: relative;
+}
+
+.card-body {
+    padding: 0 32px 32px 32px;
+}
+
+.card-footer {
+    padding: 16px 32px 32px 32px;
+    text-align: center;
+}
+
+
+
+
+
+.logo-container {
+    margin-bottom: 20px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.logo:hover {
+    transform: translateY(-2px);
+}
+
+.logo-image {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.welcome-text {
+    margin-top: 16px;
+}
+
+.welcome-text h1 {
+    color: #1e293b;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: #FF6B00;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+
+
+.input-group {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.input-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #9ca3af;
+    transition: all 0.3s ease;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 18px 18px 18px 54px;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    color: #1f2937;
+}
+
+.input-group input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #FF6B00;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.input-group input:focus + .input-icon svg,
+.input-group:focus-within .input-icon svg {
+    stroke: #FF6B00;
+    transform: scale(1.1);
+}
+
+/* Estilos para o botão de toggle da senha */
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.password-toggle:active {
+    background-color: rgba(255, 107, 0, 0.2);
+    transform: translateY(-50%) scale(0.95);
+}
+
+.password-toggle:focus {
+    outline: none;
+    background-color: rgba(255, 107, 0, 0.15);
+}
+
+.password-toggle.animating {
+    pointer-events: none;
+}
+
+.password-toggle.animating:hover {
+    transform: translateY(-50%) scale(1);
+    background-color: rgba(255, 107, 0, 0.1);
+}
+
+.eye-icon {
+    display: block;
+    transition: all 0.3s ease;
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.eye-icon.eye-open {
+    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.eye-icon.eye-closed {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Quando a senha está visível */
+.password-toggle.showing .eye-icon.eye-open {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.password-toggle.showing .eye-icon.eye-closed {
+    display: none;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+
+
+/* Ajustar padding do input de senha para acomodar o botão */
+.input-group input[type="password"],
+.input-group input[type="text"] {
+    padding-right: 50px;
+}
+
+/* Garantir que o input-group tenha position relative */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    accent-color: #FF6B00;
+}
+
+.checkbox-group label {
+    color: #718096;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    height: 48px;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #E55A00 0%, #FF6B00 100%);
+}
+
+.login-btn:hover .btn-ripple {
+    opacity: 1;
+}
+
+.login-btn:active {
+    background: linear-gradient(135deg, #E55A00 0%, #FF6B00 100%);
+}
+
+.login-btn:focus {
+    outline: none;
+    background: linear-gradient(135deg, #E55A00 0%, #FF6B00 100%);
+}
+
+.error-message {
+    background: #fef5f5;
+    color: #e53e3e;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #fed7d7;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-form {
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    
+    .login-left,
+    .login-right {
+        display: none;
+    }
+    
+    .login-center {
+        flex: 1;
+        padding: 15px;
+    }
+    
+    .login-card {
+        padding: 20px;
+        border-radius: 15px;
+        max-width: 100%;
+    }
+    
+    .logo-container {
+        width: 100%;
+        height: 120px;
+        min-width: 120px;
+        min-height: 120px;
+    }
+    
+    .logo {
+        width: 100%;
+        height: 120px;
+        max-width: 100%;
+        max-height: 120px;
+        min-width: 100%;
+        min-height: 120px;
+    }
+    
+    .logo-image {
+        object-fit: contain;
+        background: transparent;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+}
+
+/* Estilos para o footer do login */
+.login-footer {
+    margin-top: 20px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.divider {
+    text-align: center;
+    margin: 16px 0;
+    position: relative;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #e5e7eb 20%, #e5e7eb 80%, transparent 100%);
+    z-index: 1;
+}
+
+.divider span {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+    border-radius: 20px;
+}
+
+.btn-register {
+    width: 100%;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.1);
+    color: #4b5563;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 48px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.btn-register .btn-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-register:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 107, 0, 0.3);
+    color: #FF6B00;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 107, 0, 0.1);
+}
+
+.btn-register:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+}
+
+.new-user-btn {
+    background: none;
+    border: none;
+    color: #FF6B00;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+}
+
+.new-user-btn:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+    color: #E55A00;
+}
+
+.new-user-btn:active {
+    background-color: rgba(255, 107, 0, 0.2);
+    transform: scale(0.95);
+}
+
+.new-user-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Modal de Registro */
+.register-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    will-change: opacity;
+}
+
+.register-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.register-modal-content {
+    background: #f5f6f7;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 550px;
+    width: 95%;
+    max-height: 95vh;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-10px);
+    transition: transform 0.15s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    will-change: transform;
+}
+
+.register-modal.show .register-modal-content {
+    transform: translateY(0);
+}
+
+.register-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    position: relative;
+}
+
+.register-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    flex-shrink: 0;
+}
+
+.register-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.register-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.register-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333333;
+    line-height: 1.2;
+}
+
+.register-title p {
+    margin: 0;
+    font-size: 14px;
+    color: #666666;
+    line-height: 1.4;
+}
+
+.close-register-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+    color: #666666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.close-register-modal:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333333;
+}
+
+.close-register-modal svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+    margin: 0;
+}
+
+.register-form {
+    padding: 20px 24px 24px 24px;
+}
+
+/* Ajuste do espaçamento para grupos sem dicas */
+.input-group {
+    margin-bottom: 20px;
+}
+
+/* Ajuste do espaçamento do formulário */
+.register-form {
+    padding: 20px 24px 24px 24px;
+}
+
+.register-form .input-group:first-child {
+    margin-top: 0;
+}
+
+.register-form .input-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Erros de campo em tempo real */
+.field-error {
+    display: none;
+    color: #e74c3c;
+    font-size: 11px;
+    margin-top: 4px;
+    padding: 4px 8px;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 4px;
+    border-left: 2px solid #e74c3c;
+}
+
+/* Transições para bordas dos inputs */
+.input-group input {
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #FF6B00;
+}
+
+/* Estados de validação */
+.input-group input[style*="border-color: #2ecc71"] {
+    border-color: #2ecc71 !important;
+}
+
+.input-group input[style*="border-color: #e74c3c"] {
+    border-color: #e74c3c !important;
+}
+
+.register-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: flex-end;
+}
+
+.register-actions .btn-secondary,
+.register-actions .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-width: 100px;
+    height: 40px;
+    line-height: 1;
+}
+
+.register-actions .btn-secondary {
+    background: #f1f3f4;
+    color: #666666;
+    border: 1px solid #e2e8f0;
+}
+
+.register-actions .btn-secondary:hover {
+    background: #e9ecef;
+    color: #333333;
+}
+
+.register-actions .btn-primary {
+    background: #FF6B00;
+    color: white;
+}
+
+.register-actions .btn-primary:hover {
+    background: #E55A00;
+}
+
+.register-actions .btn-secondary svg,
+.register-actions .btn-primary svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+}
+
+/* Ajustes específicos para ícones nos inputs */
+.input-group .input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+}
+
+.input-group .input-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #FF6B00;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajuste do padding dos inputs para acomodar ícones */
+.input-group input {
+    padding-left: 44px;
+    padding-right: 44px;
+    height: 48px;
+    line-height: 48px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Ajuste do toggle de senha */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+}
+
+.password-toggle:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+}
+
+.password-toggle:active {
+    background-color: rgba(255, 107, 0, 0.2);
+    transform: translateY(-50%) scale(0.95);
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: #FF6B00;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajuste específico para o modal de cadastro */
+.register-form .input-group {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.register-form .input-group input {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.3s ease;
+    padding-left: 44px;
+    padding-right: 44px;
+    height: 48px;
+    line-height: 48px;
+    box-sizing: border-box;
+}
+
+.register-form .input-group input:focus {
+    outline: none;
+    border-color: #FF6B00;
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+/* Garantir que os ícones fiquem dentro dos inputs */
+.register-form .input-group .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.register-form .input-group .input-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #FF6B00;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+.register-form .input-group .password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0;
+    padding: 4px;
+}
+
+.register-form .input-group .password-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: #FF6B00;
+    stroke-width: 2;
+    fill: none;
+    display: block;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ajuste para inputs sem toggle de senha */
+.register-form .input-group:not(:has(.password-toggle)) input {
+    padding-right: 16px;
+}
+
+/* Ajuste específico para o campo de usuário (sem toggle) */
+.register-form .input-group:first-child input {
+    padding-right: 16px;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .register-modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .register-header {
+        padding: 20px 20px 12px 20px;
+    }
+    
+    .register-form {
+        padding: 16px 20px 20px 20px;
+    }
+    
+    .register-actions {
+        padding: 12px 20px 20px 20px;
+        flex-direction: column;
+    }
+    
+    .register-actions .btn-secondary,
+    .register-actions .btn-primary {
+        width: 100%;
+    }
+}
+
+/* Mensagem de sucesso */
+.success-message {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Versão do Sistema */
+.version-info {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #666;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 107, 0, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.version-info:hover {
+    background: rgba(255, 107, 0, 0.1);
+    color: #FF6B00;
+    transform: scale(1.05);
+}
+
+/* ===== TEMA ESCURO PARA MODAL DE REGISTRO ===== */
+[data-theme="dark"] .register-modal-content {
+    background: #2d3748;
+    border: 1px solid #4a5568;
+}
+
+[data-theme="dark"] .register-header {
+    border-bottom: 1px solid #4a5568;
+}
+
+[data-theme="dark"] .register-title h3 {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .register-title p {
+    color: #a0aec0;
+}
+
+[data-theme="dark"] .close-register-modal {
+    color: #a0aec0;
+}
+
+[data-theme="dark"] .close-register-modal:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .register-form .input-group input {
+    background: #4a5568;
+    border: 1px solid #5a6578;
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .register-form .input-group input:focus {
+    border-color: #FF6B00;
+    background: #4a5568;
+}
+
+[data-theme="dark"] .register-form .input-group input::placeholder {
+    color: #a0aec0;
+}
+
+[data-theme="dark"] .register-actions {
+    background: #4a5568;
+    border-top: 1px solid #5a6578;
+    padding: 15px 24px 24px 24px;
+    margin-top: 0;
+    border-radius: 0 0 12px 12px;
+}
+
+[data-theme="dark"] .register-actions .btn-secondary {
+    background: #5a6578;
+    color: #e2e8f0;
+    border: 1px solid #6b7280;
+}
+
+[data-theme="dark"] .register-actions .btn-secondary:hover {
+    background: #6b7280;
+    color: #f7fafc;
+}
+
+[data-theme="dark"] .success-message {
+    background: #2d5a3d;
+    color: #68d391;
+    border: 1px solid #38a169;
+}
+
+[data-theme="dark"] .field-error {
+    background: rgba(245, 101, 101, 0.1);
+    color: #f56565;
+    border-left: 2px solid #f56565;
+}
+
+/* ===== MODO TELA CHEIA ===== */
+/* Estilos para quando a tela de login está em tela cheia */
+body.fullscreen-mode {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Ajustar barra de janela em tela cheia */
+body.fullscreen-mode .custom-window-bar {
+    display: none;
+}
+
+/* Ajustar container de login em tela cheia */
+body.fullscreen-mode .login-container {
+    height: 100vh;
+    padding-top: 0;
+}
+
+/* Indicador visual de tela cheia para login */
+body.fullscreen-mode::before {
+    content: "Pressione F11 para sair da tela cheia";
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 10000;
+    opacity: 0;
+}

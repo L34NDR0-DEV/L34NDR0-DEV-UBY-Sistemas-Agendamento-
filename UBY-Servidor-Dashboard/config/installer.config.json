@@ -1,0 +1,12 @@
+{
+  "productName": "Servidor WebSocket Dashboard",
+  "name": "servidor",
+  "exe": "servidor.exe",
+  "description": "Servidor WebSocket simples e funcional com dashboard de monitoramento.",
+  "authors": ["Desenvolvedor"],
+  "version": "1.0.0",
+  "homepage": "https://github.com/exemplo/servidor",
+  "noMsi": true,
+  "icon": null,
+  "debug": true
+}

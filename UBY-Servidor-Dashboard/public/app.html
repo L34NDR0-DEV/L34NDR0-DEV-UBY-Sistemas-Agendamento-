@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Server • Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="/assets/servidor_logo.ico" type="image/x-icon">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Carregando Dashboard</h2>
+            <p>Conectando ao servidor...</p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-container">
+                <div class="header-left">
+                    <div class="logo">
+                        <img src="/assets/servidorl.png" alt="Logo" class="logo-image">
+                        <div class="logo-text">
+                            <h1>WebSocket Server</h1>
+                            <span>Dashboard de Monitoramento</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-center">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="current-user-name">Administrador</span>
+                            <span class="user-role">Administrador do Sistema</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="server-status" id="server-status">
+                        <div class="status-indicator online"></div>
+                        <span class="status-text">Servidor Online</span>
+                    </div>
+                    <button class="control-btn" id="server-control-btn" title="Controlar Servidor">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notifications Area -->
+        <div id="notifications-container" class="notifications-container">
+            <!-- Notifications will be dynamically added here -->
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Overview -->
+            <section class="stats-overview">
+                <div class="stats-grid">
+                    <!-- Memory Card -->
+                    <div class="stat-card memory-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-memory"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Memória RAM</h3>
+                                <span class="card-subtitle">Uso atual do sistema</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value" id="memory-value">0 GB</div>
+                            <div class="stat-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="memory-progress"></div>
+                                </div>
+                                <span class="progress-text" id="memory-text">0% de 0 GB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CPU Card -->
+                    <div class="stat-card cpu-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Processador</h3>
+                                <span class="card-subtitle">Uso da CPU</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value" id="cpu-value">0%</div>
+                            <div class="stat-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="cpu-progress"></div>
+                                </div>
+                                <span class="progress-text" id="cpu-text">0 núcleos disponíveis</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Connections Card -->
+                    <div class="stat-card connections-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Conexões</h3>
+                                <span class="card-subtitle">Usuários conectados</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stat-value" id="connections-value">0</div>
+                            <div class="stat-info">
+                                <span>usuários online</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de usuários ativos removido -->
+                </div>
+            </section>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <!-- Left Column -->
+                <div class="content-left">
+                    <!-- Cities Analytics -->
+                    <section class="panel cities-panel">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-map-marker-alt"></i> Cidades Mais Solicitadas</h2>
+                            <button class="refresh-btn" id="refresh-cities">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="panel-content">
+                            <div class="cities-chart-container">
+                                <canvas id="cities-chart" width="400" height="300"></canvas>
+                            </div>
+                            <div class="cities-stats" id="cities-stats">
+                                <!-- Cities stats will be populated here -->
+                            </div>
+                        </div>
+                    </section>
+
+
+                </div>
+
+                <!-- Right Column -->
+                <div class="content-right">
+                    <!-- Top Cities -->
+                    <section class="panel top-cities-panel">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-trophy"></i> Top Cidades</h2>
+                            <button class="refresh-btn" id="refresh-top-cities">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="panel-content">
+                            <div class="top-cities-list" id="top-cities-list">
+                                <!-- Top cities will be populated here -->
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Connected Users -->
+                    <section class="panel connected-users-panel">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-users"></i> Usuários Conectados</h2>
+                            <span class="user-count" id="connected-users-count">0</span>
+                        </div>
+                        <div class="panel-content">
+                            <div class="connected-users-list" id="connected-users-list">
+                                <div class="no-users-message" id="no-users-message">
+                                    <i class="fas fa-user-slash"></i>
+                                    <span>Nenhum usuário conectado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Seção de ações rápidas removida -->
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Preloader
+        class Dashboard {
+            constructor() {
+                this.socket = null;
+                this.isConnected = false;
+                this.init();
+            }
+
+            init() {
+                this.hidePreloader();
+                this.setupEventListeners();
+                this.connectWebSocket();
+                this.initializeCitiesChart();
+                this.initServerControlButton();
+            }
+
+            initServerControlButton() {
+                // Inicializar botão como servidor ligado (vermelho)
+                this.updateServerControlButton(true);
+            }
+
+            updateServerControlButton(isRunning) {
+                const controlBtn = document.getElementById('server-control-btn');
+                if (controlBtn) {
+                    controlBtn.classList.remove('server-running', 'server-stopped');
+                    if (isRunning) {
+                        controlBtn.classList.add('server-running');
+                        controlBtn.title = 'Parar Servidor';
+                    } else {
+                        controlBtn.classList.add('server-stopped');
+                        controlBtn.title = 'Servidor Parado';
+                    }
+                }
+            }
+
+            hidePreloader() {
+                setTimeout(() => {
+                    const preloader = document.getElementById('loading-screen');
+                    if (preloader) {
+                        preloader.style.opacity = '0';
+                        setTimeout(() => {
+                            preloader.style.display = 'none';
+                        }, 300);
+                    }
+                }, 1000);
+            }
+
+            connectWebSocket() {
+                try {
+                    console.log('Dashboard: Iniciando conexão WebSocket...');
+                    console.log('Dashboard: Socket.IO disponível?', typeof io !== 'undefined');
+                    if (typeof io === 'undefined') {
+                        console.error('Dashboard: Socket.IO não está carregado!');
+                        return;
+                    }
+                    // Conectar ao servidor WebSocket (sem autenticação de usuário)
+                    this.socket = io();
+                    console.log('Dashboard: Socket criado:', this.socket);
+                    
+                    this.socket.on('connect', () => {
+                        this.isConnected = true;
+                        this.updateServerStatus('online');
+                        console.log('Dashboard: Conectado ao WebSocket...');
+                        // Iniciar solicitações de dados após conexão estabelecida
+                        this.startStatsUpdate();
+                        // Iniciar sistema de heartbeat
+                        this.startHeartbeat();
+                    });
+
+                    this.socket.on('disconnect', () => {
+                        this.isConnected = false;
+                        this.updateServerStatus('offline');
+                        this.stopHeartbeat();
+                        console.log('Dashboard: Desconectado do WebSocket');
+                    });
+
+                    this.socket.on('stats-update', (data) => {
+                        this.updateStats(data);
+                    });
+
+
+
+                    this.socket.on('notification-card', (notification) => {
+                        this.showNotification(notification);
+                    });
+
+                    this.socket.on('cities-data-updated', (citiesData) => {
+                        this.updateCitiesData(citiesData);
+                    });
+
+                    this.socket.on('top-cities-updated', (topCitiesData) => {
+                        this.updateTopCities(topCitiesData);
+                    });
+
+                    this.socket.on('user-connected', (userData) => {
+                        this.addConnectedUser(userData);
+                    });
+
+                    this.socket.on('user-disconnected', (userId) => {
+                        this.removeConnectedUser(userId);
+                    });
+
+                    this.socket.on('connected-users-list', (usersList) => {
+                        this.updateConnectedUsersList(usersList);
+                    });
+
+                    // Handler para heartbeat
+                    this.socket.on('heartbeat-ack', () => {
+                        console.log('Dashboard: Heartbeat confirmado');
+                    });
+
+                    this.socket.on('pong', () => {
+                        console.log('Dashboard: Pong recebido');
+                    });
+
+                    // Handler para encerramento do servidor
+                    this.socket.on('server-shutdown', (data) => {
+                        console.log('Dashboard: Servidor sendo encerrado:', data.message);
+                        this.updateServerControlButton(false);
+                        this.showNotification({
+                            type: 'warning',
+                            title: 'Servidor Encerrado',
+                            message: data.message
+                        });
+                    });
+
+                    // Solicitar lista inicial de usuários conectados
+                    this.socket.emit('request-connected-users-update');
+
+                } catch (error) {
+                    console.error('Erro ao conectar WebSocket:', error);
+                    this.updateServerStatus('error');
+                }
+            }
+
+            startHeartbeat() {
+                // Enviar heartbeat a cada 25 segundos (antes do timeout de 30s do servidor)
+                this.heartbeatInterval = setInterval(() => {
+                    if (this.socket && this.isConnected) {
+                        this.socket.emit('heartbeat');
+                        this.socket.emit('ping');
+                    }
+                }, 25000);
+            }
+
+            stopHeartbeat() {
+                if (this.heartbeatInterval) {
+                    clearInterval(this.heartbeatInterval);
+                    this.heartbeatInterval = null;
+                }
+            }
+
+            updateServerStatus(status) {
+                const statusElement = document.getElementById('server-status');
+                const indicator = statusElement.querySelector('.status-indicator');
+                const text = statusElement.querySelector('.status-text');
+                
+                indicator.className = `status-indicator ${status}`;
+                
+                switch(status) {
+                    case 'online':
+                        text.textContent = 'Servidor Online';
+                        break;
+                    case 'offline':
+                        text.textContent = 'Servidor Offline';
+                        break;
+                    case 'error':
+                        text.textContent = 'Erro de Conexão';
+                        break;
+                }
+            }
+
+            updateStats(data) {
+                // Memory
+                if (data.memory) {
+                    document.getElementById('memory-value').textContent = `${data.memory.used.toFixed(1)} GB`;
+                    document.getElementById('memory-text').textContent = `${data.memory.percentage.toFixed(1)}% de ${data.memory.total.toFixed(1)} GB`;
+                    document.getElementById('memory-progress').style.width = `${data.memory.percentage}%`;
+                }
+
+                // CPU
+                if (data.cpu) {
+                    document.getElementById('cpu-value').textContent = `${data.cpu.usage.toFixed(1)}%`;
+                    document.getElementById('cpu-text').textContent = `${data.cpu.cores} núcleos disponíveis`;
+                    document.getElementById('cpu-progress').style.width = `${data.cpu.usage}%`;
+                }
+
+                // Connections
+                if (data.connections) {
+                    document.getElementById('connections-value').textContent = data.connections.current || 0;
+                }
+
+                // Atualização de usuários ativos removida - card foi removido
+            }
+
+            // Método updateUsersList removido - card de usuários foi removido do dashboard
+
+
+
+            // Método updateSystemInfo removido - card de informações do sistema foi removido do dashboard
+
+            handleRefreshClick(button, eventName, successMessage) {
+                if (!this.socket) {
+                    this.showNotification({
+                        message: 'Erro: Conexão não estabelecida',
+                        type: 'error',
+                        title: 'Erro de Conexão'
+                    });
+                    return;
+                }
+
+                // Desabilitar botão durante a sincronização
+                button.disabled = true;
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                // Emitir evento de sincronização
+                this.socket.emit(eventName);
+
+                // Reabilitar botão após 2 segundos
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                    this.showNotification({
+                        message: successMessage,
+                        type: 'success',
+                        title: 'Sincronização Concluída'
+                    });
+                }, 2000);
+            }
+
+            setupEventListeners() {
+                // Refresh buttons
+
+
+                document.getElementById('refresh-cities')?.addEventListener('click', (e) => {
+                    this.handleRefreshClick(e.target, 'request-cities-update', 'Dados de cidades atualizados');
+                });
+
+                document.getElementById('refresh-top-cities')?.addEventListener('click', (e) => {
+                    this.handleRefreshClick(e.target, 'request-top-cities-update', 'Top cidades atualizado');
+                });
+
+                // Server control
+                document.getElementById('server-control-btn')?.addEventListener('click', () => {
+                    const controlBtn = document.getElementById('server-control-btn');
+                    const isRunning = controlBtn?.classList.contains('server-running');
+                    
+                    if (isRunning) {
+                        if (confirm('Tem certeza que deseja parar o servidor?')) {
+                            if (this.socket) {
+                                this.socket.emit('shutdown-server');
+                                // O estado será atualizado pelo evento 'server-shutdown'
+                            }
+                        }
+                    } else {
+                        alert('O servidor já está parado.');
+                    }
+                });
+
+                // Event listener do botão restart-server removido
+
+                document.getElementById('clear-logs')?.addEventListener('click', () => {
+                    if (confirm('Tem certeza que deseja limpar os logs?')) {
+                        if (this.socket) {
+                            this.socket.emit('clear-logs');
+                            alert('Logs limpos com sucesso!');
+                        }
+                    }
+                });
+
+                document.getElementById('export-data')?.addEventListener('click', () => {
+                    if (this.socket) {
+                        this.socket.emit('export-data');
+                        alert('Dados exportados com sucesso!');
+                    }
+                });
+            }
+
+            startStatsUpdate() {
+                // Request initial data
+                if (this.socket) {
+                    console.log('Frontend: 📤 Enviando solicitações iniciais de dados...');
+                    this.socket.emit('request-stats-update');
+                    this.socket.emit('request-users-update');
+
+                    this.socket.emit('request-system-info');
+                }
+
+                // Set up periodic updates
+                setInterval(() => {
+                    if (this.socket && this.isConnected) {
+                        this.socket.emit('request-stats-update');
+                        this.socket.emit('request-system-info');
+                    }
+                }, 5000);
+            }
+
+            showNotification(notification) {
+                const container = document.getElementById('notifications-container');
+                if (!container) return;
+
+                // Create notification element
+                const notificationEl = document.createElement('div');
+                notificationEl.className = `notification-card ${notification.type || 'info'}`;
+                notificationEl.innerHTML = `
+                    <div class="notification-header">
+                        <div class="notification-icon">
+                            ${this.getNotificationIcon(notification.type)}
+                        </div>
+                        <div class="notification-title">${notification.title || 'Notificação'}</div>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="notification-message">${notification.message}</div>
+                    <div class="notification-timestamp">${new Date().toLocaleTimeString()}</div>
+                    <div class="notification-progress"></div>
+                `;
+
+                // Add to container
+                container.appendChild(notificationEl);
+
+                // Show animation
+                setTimeout(() => {
+                    notificationEl.classList.add('show');
+                }, 100);
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (notificationEl.parentNode) {
+                        notificationEl.classList.remove('show');
+                        setTimeout(() => {
+                            if (notificationEl.parentNode) {
+                                notificationEl.remove();
+                            }
+                        }, 300);
+                    }
+                }, 5000);
+            }
+
+            getNotificationIcon(type) {
+                switch(type) {
+                    case 'success':
+                        return '<i class="fas fa-check-circle" style="color: #27ae60;"></i>';
+                    case 'error':
+                        return '<i class="fas fa-exclamation-circle" style="color: #e74c3c;"></i>';
+                    case 'warning':
+                        return '<i class="fas fa-exclamation-triangle" style="color: #f39c12;"></i>';
+                    case 'info':
+                    default:
+                        return '<i class="fas fa-info-circle" style="color: #3498db;"></i>';
+                }
+            }
+
+            initializeCitiesChart() {
+                const canvas = document.getElementById('cities-chart');
+                if (!canvas) return;
+
+                const ctx = canvas.getContext('2d');
+                this.citiesChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: [
+                                '#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1',
+                                '#fd7e14', '#20c997', '#e83e8c', '#6c757d', '#17a2b8'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateCitiesData(citiesData) {
+                // Se não há dados ou array vazio, mostrar dados zerados
+                if (!citiesData || !Array.isArray(citiesData) || citiesData.length === 0) {
+                    console.log('Dados de cidades vazios ou inválidos - mostrando dados zerados');
+                    
+                    // Update chart com dados vazios
+                    if (this.citiesChart) {
+                        this.citiesChart.data.labels = [];
+                        this.citiesChart.data.datasets[0].data = [];
+                        this.citiesChart.update();
+                    }
+
+                    // Update stats list com mensagem de dados vazios
+                    const statsContainer = document.getElementById('cities-stats');
+                    if (statsContainer) {
+                        statsContainer.innerHTML = `
+                            <div class="no-data-message">
+                                <i class="fas fa-chart-bar"></i>
+                                <p>Nenhum dado de cidades disponível</p>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+
+                // Update chart
+                if (this.citiesChart) {
+                    this.citiesChart.data.labels = citiesData.map(city => city.name);
+                    this.citiesChart.data.datasets[0].data = citiesData.map(city => city.count);
+                    this.citiesChart.update();
+                }
+
+                // Update stats list
+                const statsContainer = document.getElementById('cities-stats');
+                if (statsContainer) {
+                    statsContainer.innerHTML = '';
+                    citiesData.slice(0, 5).forEach(city => {
+                        const statItem = document.createElement('div');
+                        statItem.className = 'city-stat-item';
+                        statItem.innerHTML = `
+                            <span class="city-name">${city.name}</span>
+                            <span class="city-count">${city.count}</span>
+                        `;
+                        statsContainer.appendChild(statItem);
+                    });
+                }
+            }
+
+            // Connected Users Management
+            updateConnectedUsersList(usersList) {
+                const container = document.getElementById('connected-users-list');
+                const countElement = document.getElementById('connected-users-count');
+                const noUsersMessage = document.getElementById('no-users-message');
+                
+                if (!container) return;
+                
+                // Update count
+                countElement.textContent = usersList.length;
+                
+                // Clear container
+                container.innerHTML = '';
+                
+                if (usersList.length === 0) {
+                    // Show no users message
+                    const noUsersDiv = document.createElement('div');
+                    noUsersDiv.className = 'no-users-message';
+                    noUsersDiv.innerHTML = `
+                        <i class="fas fa-user-slash"></i>
+                        <span>Nenhum usuário conectado</span>
+                    `;
+                    container.appendChild(noUsersDiv);
+                } else {
+                    // Show users list
+                    usersList.forEach(user => {
+                        this.createUserElement(user, container);
+                    });
+                }
+            }
+            
+            addConnectedUser(userData) {
+                const container = document.getElementById('connected-users-list');
+                const countElement = document.getElementById('connected-users-count');
+                const noUsersMessage = container.querySelector('.no-users-message');
+                
+                // Remove no users message if exists
+                if (noUsersMessage) {
+                    noUsersMessage.remove();
+                }
+                
+                // Create and add user element
+                this.createUserElement(userData, container);
+                
+                // Update count
+                const currentCount = parseInt(countElement.textContent) || 0;
+                countElement.textContent = currentCount + 1;
+            }
+            
+            removeConnectedUser(userId) {
+                const container = document.getElementById('connected-users-list');
+                const countElement = document.getElementById('connected-users-count');
+                const userElement = container.querySelector(`[data-user-id="${userId}"]`);
+                
+                if (userElement) {
+                    userElement.style.animation = 'fadeOutUser 0.3s ease';
+                    setTimeout(() => {
+                        userElement.remove();
+                        
+                        // Update count
+                        const currentCount = parseInt(countElement.textContent) || 0;
+                        const newCount = Math.max(0, currentCount - 1);
+                        countElement.textContent = newCount;
+                        
+                        // Show no users message if empty
+                        if (newCount === 0) {
+                            const noUsersDiv = document.createElement('div');
+                            noUsersDiv.className = 'no-users-message';
+                            noUsersDiv.innerHTML = `
+                                <i class="fas fa-user-slash"></i>
+                                <span>Nenhum usuário conectado</span>
+                            `;
+                            container.appendChild(noUsersDiv);
+                        }
+                    }, 300);
+                }
+            }
+            
+            createUserElement(userData, container) {
+                const userItem = document.createElement('div');
+                userItem.className = 'connected-user-item';
+                userItem.setAttribute('data-user-id', userData.userId || userData.id);
+                
+                const initials = this.getUserInitials(userData.name || userData.username || 'U');
+                const connectionTime = this.formatConnectionTime(userData.connectedAt);
+                
+                userItem.innerHTML = `
+                    <div class="user-avatar">${initials}</div>
+                    <div class="user-info">
+                        <div class="user-name">${userData.name || userData.username || 'Usuário'}</div>
+                        <div class="user-connection-time">Conectado às ${connectionTime}</div>
+                    </div>
+                    <div class="user-status"></div>
+                `;
+                
+                container.appendChild(userItem);
+            }
+            
+            getUserInitials(name) {
+                return name.split(' ')
+                    .map(word => word.charAt(0))
+                    .join('')
+                    .substring(0, 2)
+                    .toUpperCase();
+            }
+            
+            formatConnectionTime(timestamp) {
+                if (!timestamp) {
+                    return 'Horário não disponível';
+                }
+                
+                let date;
+                
+                // Se timestamp é um número (Unix timestamp)
+                if (typeof timestamp === 'number') {
+                    date = new Date(timestamp);
+                } 
+                // Se timestamp é uma string no formato brasileiro
+                else if (typeof timestamp === 'string') {
+                    // Formato: "17/08/2025, 17:44:24"
+                    if (timestamp.includes('/') && timestamp.includes(',')) {
+                        const [datePart, timePart] = timestamp.split(', ');
+                        const [day, month, year] = datePart.split('/');
+                        const [hour, minute, second] = timePart.split(':');
+                        date = new Date(year, month - 1, day, hour, minute, second);
+                    } else {
+                        date = new Date(timestamp);
+                    }
+                } else {
+                    date = new Date(timestamp);
+                }
+                
+                // Verificar se a data é válida
+                if (isNaN(date.getTime())) {
+                    return 'Horário inválido';
+                }
+                
+                return date.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            updateTopCities(topCitiesData) {
+                const container = document.getElementById('top-cities-list');
+                if (!container) return;
+
+                // Se não há dados ou array vazio, mostrar dados zerados
+                if (!topCitiesData || !Array.isArray(topCitiesData) || topCitiesData.length === 0) {
+                    console.log('Dados de top cidades vazios ou inválidos - mostrando dados zerados');
+                    
+                    container.innerHTML = `
+                        <div class="no-data-message">
+                            <i class="fas fa-trophy"></i>
+                            <p>Nenhum dado de ranking disponível</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                topCitiesData.slice(0, 10).forEach((city, index) => {
+                    const cityItem = document.createElement('div');
+                    cityItem.className = 'top-city-item';
+                    
+                    let rankClass = '';
+                    if (index === 0) rankClass = 'gold';
+                    else if (index === 1) rankClass = 'silver';
+                    else if (index === 2) rankClass = 'bronze';
+
+                    cityItem.innerHTML = `
+                        <div class="city-rank ${rankClass}">${index + 1}</div>
+                        <div class="city-info">
+                            <div class="city-name">${city.name}</div>
+                            <div class="city-details">${city.state || 'Estado não informado'}</div>
+                        </div>
+                        <div class="city-score">
+                            <span class="score-value">${city.score || city.count}</span>
+                            <span class="score-label">agendamentos</span>
+                        </div>
+                    `;
+                    container.appendChild(cityItem);
+                });
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new Dashboard();
+        });
+    </script>
+</body>
+</html>
