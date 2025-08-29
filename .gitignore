@@ -8,7 +8,6 @@ yarn-error.log*
 NUL
 
 # Build outputs
-dist/
 build/
 out/
 
