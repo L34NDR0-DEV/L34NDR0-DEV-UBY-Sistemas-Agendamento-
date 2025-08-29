@@ -66,7 +66,7 @@
     "publish": {
       "provider": "github",
       "owner": "L34NDR0-DEV",
-      "repo": "UBY--Sistemas-Agendamento-1.0.6"
+      "repo": "L34NDR0-DEV-UBY-Sistemas-Agendamento-"
     },
     "win": {
       "target": [

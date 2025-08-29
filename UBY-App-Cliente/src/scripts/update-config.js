@@ -6,8 +6,8 @@
 window.UpdateConfig = {
     // Configuração do repositório GitHub
     repository: {
-        owner: 'seu-usuario',        // Substitua pelo seu usuário do GitHub
-        repo: 'seu-repositorio',     // Substitua pelo nome do seu repositório
+        owner: 'L34NDR0-DEV',        // Usuário do GitHub
+        repo: 'L34NDR0-DEV-UBY-Sistemas-Agendamento-',     // Nome do repositório
         branch: 'main'               // Branch principal (main ou master)
     },
     
