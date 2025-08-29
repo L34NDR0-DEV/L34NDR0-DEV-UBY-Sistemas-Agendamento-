@@ -39,10 +39,13 @@ class WebSocketClient {
                 
                 try {
                     // Testar conexão segura
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
                     const response = await fetch(`${secureUrl}/status`, { 
                         method: 'GET',
-                        timeout: 5000 
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
                     if (response.ok) {
                         serverUrl = secureUrl;
                         console.log('[INFO] Usando conexão segura HTTPS/WSS');
@@ -149,8 +152,8 @@ class WebSocketClient {
             this.reconnectAttempts = 0;
             
             // Re-autenticar após reconexão
-            if (this.currentUser) {
-                this.authenticate(this.currentUser.id, this.currentUser.username, this.currentUser.displayName);
+            if (this.userId && this.userName && this.displayName) {
+                this.authenticate(this.userId, this.userName, this.displayName);
             }
         });
 
@@ -648,6 +651,36 @@ class WebSocketClient {
                 break;
             default:
                 console.log(`[UPDATE] Tipo de atualização desconhecido: ${update.type}`);
+        }
+    }
+
+    /**
+     * Manipular atualização de notificação (wrapper)
+     */
+    handleNotificationUpdate(data) {
+        try {
+            console.log('[NOTIFICATION] Atualização recebida:', data);
+            // Reutilizar fluxo existente
+            this.handleNotification(data);
+        } catch (error) {
+            console.error('[ERROR] Erro ao processar atualização de notificação:', error);
+        }
+    }
+
+    /**
+     * Manipular atualização genérica de status (wrapper)
+     */
+    handleStatusUpdate(data) {
+        try {
+            console.log('[STATUS] Atualização genérica recebida:', data);
+            // Se tiver formato conhecido, atualizar UI
+            if (data.agendamentoId && data.newStatus && window.updateAgendamentoStatus) {
+                window.updateAgendamentoStatus(data.agendamentoId, data.newStatus);
+            }
+            // Emitir evento para ouvintes
+            this.emit('status:update', data);
+        } catch (error) {
+            console.error('[ERROR] Erro ao processar atualização de status:', error);
         }
     }
 

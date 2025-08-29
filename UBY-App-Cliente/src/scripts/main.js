@@ -12,103 +12,15 @@ if (typeof require !== 'undefined') {
     console.log('Require não disponível, rodando no navegador');
 }
 
-// Função para controlar o preloader
+console.log('[MAIN DEBUG] Script main.js carregado');
+
+// Loader rápido: remove elemento após carga inicial
 function initializePreloader() {
-    const preloader = document.getElementById('appPreloader');
-    const logoImage = document.querySelector('.preloader-logo-image');
-    
-    if (!preloader) {
-        console.warn('Preloader não encontrado');
-        return;
-    }
-    
-    const minimumDisplayTime = 800; // Tempo mínimo de exibição
-    const startTime = Date.now();
-    let preloaderHidden = false;
-    
-    // Função para verificar se todos os recursos críticos foram carregados
-    function checkResourcesLoaded() {
-        const logoLoaded = !logoImage || (logoImage.complete && logoImage.naturalWidth > 0);
-        const documentsLoaded = document.readyState === 'complete';
-        return logoLoaded && documentsLoaded;
-    }
-    
-    // Função para ocultar o preloader com timing otimizado
-    const hidePreloader = () => {
-        if (preloaderHidden) return;
-        preloaderHidden = true;
-        
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
-        
-        setTimeout(() => {
-            preloader.classList.add('hidden');
-            // Aguarda a transição CSS completa (400ms)
-            setTimeout(() => {
-                if (preloader && preloader.parentElement) {
-                    preloader.remove();
-                }
-            }, 400);
-        }, remainingTime);
-    };
-    
-    // Preload de recursos críticos
-    function preloadCriticalResources() {
-        if (logoImage && !logoImage.complete) {
-            const img = new Image();
-            img.onload = () => {
-                console.log('Logo pré-carregada com sucesso');
-                if (checkResourcesLoaded()) {
-                    hidePreloader();
-                }
-            };
-            img.onerror = () => {
-                console.warn('Erro ao pré-carregar logo');
-                hidePreloader();
-            };
-            img.src = logoImage.src;
-        }
-    }
-    
-    // Aguardar carregamento da logo
-    if (logoImage) {
-        logoImage.onload = () => {
-            console.log('Logo carregada com sucesso');
-            if (checkResourcesLoaded()) {
-                hidePreloader();
-            }
-        };
-        
-        logoImage.onerror = () => {
-            console.warn('Erro ao carregar logo, removendo preloader');
-            hidePreloader();
-        };
-        
-        // Se a logo já estiver carregada
-        if (logoImage.complete && logoImage.naturalWidth > 0) {
-            if (checkResourcesLoaded()) {
-                hidePreloader();
-            }
-        } else {
-            // Inicia o preload se a imagem ainda não foi carregada
-            preloadCriticalResources();
-        }
-    } else {
-        // Se não há logo, aguarda apenas o documento
-        if (document.readyState === 'complete') {
-            hidePreloader();
-        } else {
-            window.addEventListener('load', hidePreloader);
-        }
-    }
-    
-    // Fallback de segurança - remover após tempo máximo
+    const quick = document.getElementById('quickLoader');
+    if (!quick) return;
     setTimeout(() => {
-        if (!preloaderHidden) {
-            console.log('Fallback de segurança: removendo preloader após timeout');
-            hidePreloader();
-        }
-    }, 3000);
+        quick.parentElement && quick.parentElement.removeChild(quick);
+    }, 600);
 }
 
 // Função auxiliar para chamar showToast de forma segura
@@ -3953,6 +3865,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar WebSocket após um pequeno delay
     setTimeout(() => {
         initializeWebSocket();
+        
+
     }, 2000);
     
     // Inicializar sistema de otimização de performance

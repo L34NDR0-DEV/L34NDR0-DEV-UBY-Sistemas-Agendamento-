@@ -6,17 +6,18 @@
 class ModernUpdateSystem {
     constructor() {
         this.currentVersion = this.getCurrentVersion();
-        this.githubRepo = 'seu-usuario/seu-repositorio'; // Configurar com seu repositório
+        this.githubRepo = null; // Desabilitado - configurar com repositório real quando disponível
         this.updateCheckInterval = 30 * 60 * 1000; // 30 minutos
         this.isChecking = false;
         this.isUpdating = false;
         this.updateAvailable = false;
         this.latestVersion = null;
+        this.updateCheckEnabled = false; // Desabilitar verificações automáticas
         
         this.initializeUI();
-        this.startPeriodicCheck();
+        // this.startPeriodicCheck(); // Desabilitado temporariamente
         
-        console.log('[UPDATE-SYSTEM] Sistema de atualização inicializado');
+        console.log('[UPDATE-SYSTEM] Sistema de atualização inicializado (modo offline)');
         console.log('[UPDATE-SYSTEM] Versão atual:', this.currentVersion);
     }
     
@@ -46,6 +47,13 @@ class ModernUpdateSystem {
     // Verificar nova versão no GitHub
     async checkForUpdates() {
         if (this.isChecking) return;
+        
+        // Verificar se as atualizações estão habilitadas
+        if (!this.updateCheckEnabled || !this.githubRepo) {
+            console.log('[UPDATE-SYSTEM] Verificação de atualizações desabilitada');
+            this.updateUI('disabled');
+            return;
+        }
         
         this.isChecking = true;
         this.updateUI('checking');
@@ -337,6 +345,13 @@ class ModernUpdateSystem {
                 statusIcon.innerHTML = window.UpdateIcons.check;
                 statusText.textContent = 'Atualização concluída!';
                 updateProgress.style.display = 'none';
+                break;
+                
+            case 'disabled':
+                statusIcon.innerHTML = window.UpdateIcons.info;
+                statusText.textContent = 'Sistema de atualizações desabilitado';
+                checkBtn.disabled = true;
+                checkBtn.style.display = 'none';
                 break;
                 
             case 'error':

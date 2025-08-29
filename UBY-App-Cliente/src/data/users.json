@@ -87,6 +87,22 @@
       "password": "212010",
       "role": "Atendente",
       "status": "ativo"
+    },
+    {
+      "id": 13,
+      "username": "Jhonny",
+      "password": "225927",
+      "role": "Suporte",
+      "displayName": "Jhonny",
+      "status": "ativo"
+    },
+    {
+      "id": 14,
+      "username": "Mauri",
+      "password": "228166",
+      "role": "Suporte",
+      "displayName": "Mauri",
+      "status": "ativo"
     }
   ]
 }

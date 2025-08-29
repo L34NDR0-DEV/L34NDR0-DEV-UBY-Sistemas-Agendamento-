@@ -40,7 +40,7 @@
     "jsonwebtoken": "^9.0.2",
     "socket.io": "^4.7.0",
     "socket.io-client": "^4.8.1",
-    "sqlite3": "^5.1.7",
+    
     "uuid": "^10.0.0"
   },
   "devDependencies": {
@@ -57,6 +57,7 @@
     "buildDependenciesFromSource": false,
     "nodeGypRebuild": false,
     "npmRebuild": false,
+    "buildVersion": "1.0.1",
     "files": [
       "app/**/*",
       "src/**/*",
@@ -67,7 +68,7 @@
     "publish": {
       "provider": "github",
       "owner": "L34NDR0-DEV",
-      "repo": "UBY--Sistemas-Agendamento-1.0.0"
+      "repo": "UBY--Sistemas-Agendamento-1.0.6"
     },
     "win": {
       "target": [
@@ -87,6 +88,9 @@
       "icon": "assets/logo.ico",
       "requestedExecutionLevel": "asInvoker"
     },
+    "npmArgs": [
+      "--build-from-source"
+    ],
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,

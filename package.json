@@ -1,8 +1,8 @@
 {
   "name": "uby-agendamentos",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Sistema profissional de gestão de agendamentos para Windows 10 e 11",
-  "main": "app/main.js",
+  "main": "UBY-App-Cliente/app/main.js",
   "author": "L34NDR0-DEV",
   "license": "MIT",
   "os": [
@@ -35,10 +35,10 @@
     "electron-log": "^5.0.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.0.0",
-    "express": "^4.18.0",
+    "express": "^4.21.2",
     "express-rate-limit": "^8.0.1",
     "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.0",
+    "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "uuid": "^10.0.0"
   },
@@ -55,17 +55,18 @@
     },
     "buildDependenciesFromSource": false,
     "nodeGypRebuild": false,
+    "npmRebuild": false,
     "files": [
-      "app/**/*",
-      "src/**/*",
-      "assets/**/*",
-      "data/**/*",
+      "UBY-App-Cliente/app/**/*",
+      "UBY-App-Cliente/src/**/*",
+      "UBY-App-Cliente/assets/**/*",
+      "UBY-App-Cliente/data/**/*",
       "package.json"
     ],
     "publish": {
       "provider": "github",
       "owner": "L34NDR0-DEV",
-      "repo": "UBY--Sistemas-Agendamento-1.0.0"
+      "repo": "UBY--Sistemas-Agendamento-1.0.6"
     },
     "win": {
       "target": [
@@ -82,7 +83,7 @@
           ]
         }
       ],
-      "icon": "assets/logo.ico",
+      "icon": "UBY-App-Cliente/assets/logo.ico",
       "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {

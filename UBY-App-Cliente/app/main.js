@@ -139,11 +139,41 @@ function getSystemUsers() {
 }
 
 // Carregar usuários do arquivo JSON
+function getUserDataFilePath() {
+  const userDir = app.getPath('userData');
+  const dataDir = path.join(userDir, 'data');
+  const filePath = path.join(dataDir, 'users.json');
+  try {
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+  } catch {}
+  return filePath;
+}
+
 function loadUsers() {
   try {
-    const usersPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    const usersPath = getUserDataFilePath();
+    console.log('[DEBUG] Carregando usuários de:', usersPath);
+    
+    // Sempre recriar a partir do arquivo fonte para garantir dados atualizados
+    const packagedPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    if (fs.existsSync(packagedPath)) {
+      console.log('[DEBUG] Copiando dados atualizados de:', packagedPath);
+      const initial = fs.readFileSync(packagedPath, 'utf8');
+      const dataDir = path.dirname(usersPath);
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      fs.writeFileSync(usersPath, initial, 'utf8');
+    } else if (!fs.existsSync(usersPath)) {
+      fs.writeFileSync(usersPath, JSON.stringify({ users: [] }, null, 2), 'utf8');
+    }
+    
     const usersData = fs.readFileSync(usersPath, 'utf8');
-    return JSON.parse(usersData);
+    const parsed = JSON.parse(usersData);
+    console.log('[DEBUG] Usuários carregados:', parsed.users.length);
+    return parsed;
   } catch (error) {
     console.error('Erro ao carregar usuários:', error);
     return { users: [] };
@@ -477,8 +507,8 @@ ipcMain.handle('register', async (event, userData) => {
     // Adicionar à lista de usuários
     usersData.users.push(newUser);
     
-    // Salvar no arquivo JSON
-    const usersPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    // Salvar no arquivo JSON (diretório userData)
+    const usersPath = getUserDataFilePath();
     fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf8');
     
     console.log(`[INFO] Novo usuário registrado: ${username}`);
@@ -707,7 +737,7 @@ ipcMain.handle('getUsers', async () => {
 // Handler para salvar usuários no arquivo JSON
 ipcMain.handle('saveUsers', async (event, users) => {
   try {
-    const usersPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    const usersPath = getUserDataFilePath();
     const usersData = { users: users };
     fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf8');
     console.log('[INFO] Usuários salvos no arquivo users.json');
@@ -731,8 +761,8 @@ ipcMain.handle('updateUser', async (event, userId, userData) => {
     // Atualizar dados do usuário
     usersData.users[userIndex] = { ...usersData.users[userIndex], ...userData };
     
-    // Salvar no arquivo
-    const usersPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    // Salvar no arquivo (diretório userData)
+    const usersPath = getUserDataFilePath();
     fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf8');
     
     console.log(`[INFO] Usuário ${userId} atualizado com sucesso`);
@@ -761,8 +791,8 @@ ipcMain.handle('addUser', async (event, userData) => {
     // Adicionar à lista
     usersData.users.push(newUser);
     
-    // Salvar no arquivo
-    const usersPath = path.join(__dirname, '..', 'src', 'data', 'users.json');
+    // Salvar no arquivo (diretório userData)
+    const usersPath = getUserDataFilePath();
     fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf8');
     
     console.log(`[INFO] Novo usuário adicionado: ${newUser.username}`);
@@ -1093,7 +1123,7 @@ ipcMain.on('restart-app', () => {
 // ===== SISTEMA DE ATUALIZAÇÃO =====
 
 // Configurar autoUpdater
-autoUpdater.checkForUpdatesAndNotify = false; // Desabilitar verificação automática
+// Não sobrescrever métodos; apenas configurar flags suportadas
 autoUpdater.autoDownload = true; // Baixar automaticamente
 autoUpdater.autoInstallOnAppQuit = true; // Instalar automaticamente
 
@@ -1102,12 +1132,7 @@ const isDevelopment = process.env.NODE_ENV === 'development' || !app.isPackaged;
 // SISTEMA DE ATUALIZAÇÕES ATIVADO - Removida verificação que desabilitava updates
 const disableUpdates = process.env.DISABLE_UPDATES === 'true';
 
-// Configurar repositório do GitHub para atualizações
-autoUpdater.setFeedURL({
-  provider: 'github',
-  owner: 'L34NDR0-DEV',
-  repo: 'UBY--Sistemas-Agendamento-1.0.0'
-});
+// Não definir feed manualmente; confiar no publish do package.json
 
 if (disableUpdates) {
     console.log('[INFO] Sistema de atualizacoes desabilitado (variavel de ambiente)');

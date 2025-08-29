@@ -37,15 +37,20 @@ class UserManagement {
     }
 
     checkUserPermissions() {
-        // Verificar se o usuário atual é Nathan
+        // Verificar se o usuário atual é Nathan ou tem role "Suporte"
         const userNameElement = document.getElementById('userNameText');
         const userName = userNameElement?.textContent;
         console.log('Verificando usuário:', userName);
-        if (userName === 'Nathan') {
+        
+        // Encontrar o usuário atual na lista de usuários
+        const currentUser = this.users.find(u => u.displayName === userName || u.username === userName);
+        
+        // Verificar se é Nathan ou tem role "Suporte"
+        if (userName === 'Nathan' || (currentUser && currentUser.role === 'Suporte')) {
             const userManagementBtn = document.getElementById('userManagementBtn');
             if (userManagementBtn) {
                 userManagementBtn.style.display = 'flex';
-                console.log('Botão de gerenciamento exibido para Nathan');
+                console.log('Botão de gerenciamento exibido para:', userName, '- Role:', currentUser?.role || 'Nathan');
             }
         }
     }

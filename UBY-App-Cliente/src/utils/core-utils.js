@@ -3,137 +3,83 @@
  * Combina funcionalidades de database, motorista-manager e security-utils
  * Versão otimizada e consolidada para reduzir arquivos
  */
-
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-// ===== DATABASE CORE =====
+// ===== DATABASE CORE (FILE-BASED) =====
 
 class DatabaseCore {
     constructor() {
-        this.db = null;
-        this.dbPath = path.join(__dirname, '../../data/app.db');
-        this.ensureDataDirectory();
+        this.appointmentsPath = null;
+        this.setupPaths();
     }
 
-    ensureDataDirectory() {
-        const dataDir = path.dirname(this.dbPath);
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir, { recursive: true });
+    setupPaths() {
+        try {
+            const electron = typeof require !== 'undefined' ? require('electron') : null;
+            const app = electron && (electron.remote ? electron.remote.app : (electron.app || null));
+            if (app && app.getPath) {
+                const userData = app.getPath('userData');
+                const dataDir = path.join(userData, 'data');
+                if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+                this.appointmentsPath = path.join(dataDir, 'appointments.json');
+            } else {
+                this.appointmentsPath = path.join(__dirname, '../../data/appointments.json');
+            }
+        } catch {
+            this.appointmentsPath = path.join(__dirname, '../../data/appointments.json');
         }
+        const dir = path.dirname(this.appointmentsPath);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     }
 
     async initialize() {
-        return new Promise((resolve, reject) => {
-            this.db = new sqlite3.Database(this.dbPath, (err) => {
-                if (err) {
-                    console.error('[ERROR] Erro ao conectar ao banco de dados:', err);
-                    reject(err);
-                } else {
-                    console.log('[SUCCESS] Conectado ao banco de dados SQLite');
-                    this.createTables().then(resolve).catch(reject);
-                }
-            });
-        });
-    }
-
-    async createTables() {
-        const tables = [
-            // Tabela de usuários
-            `CREATE TABLE IF NOT EXISTS users (
-                id TEXT PRIMARY KEY,
-                username TEXT UNIQUE NOT NULL,
-                display_name TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )`,
-            
-            // Tabela de agendamentos
-            `CREATE TABLE IF NOT EXISTS appointments (
-                id TEXT PRIMARY KEY,
-                user_id TEXT NOT NULL,
-                title TEXT NOT NULL,
-                description TEXT,
-                date_time DATETIME NOT NULL,
-                status TEXT DEFAULT 'active',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users (id)
-            )`,
-            
-            // Tabela de motoristas
-            `CREATE TABLE IF NOT EXISTS motoristas (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT NOT NULL,
-                cidade TEXT NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(nome, cidade)
-            )`
-        ];
-
-        for (const table of tables) {
-            await this.run(table);
+        try {
+            if (!fs.existsSync(this.appointmentsPath)) {
+                fs.writeFileSync(this.appointmentsPath, JSON.stringify({ appointments: [] }, null, 2), 'utf8');
+            }
+            return true;
+        } catch (error) {
+            console.error('[ERROR] Erro ao inicializar armazenamento de agendamentos:', error);
+            return false;
         }
     }
 
-    run(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, params, function(err) {
-                if (err) reject(err);
-                else resolve({ id: this.lastID, changes: this.changes });
-            });
-        });
+    readAppointments() {
+        try {
+            const raw = fs.readFileSync(this.appointmentsPath, 'utf8');
+            const data = raw ? JSON.parse(raw) : { appointments: [] };
+            if (!data.appointments) data.appointments = [];
+            return data.appointments;
+        } catch {
+            return [];
+        }
     }
 
-    get(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.get(sql, params, (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            });
-        });
+    writeAppointments(list) {
+        try {
+            fs.writeFileSync(this.appointmentsPath, JSON.stringify({ appointments: list }, null, 2), 'utf8');
+            return true;
+        } catch (e) {
+            console.error('Erro ao salvar appointments:', e);
+            return false;
+        }
     }
 
-    all(sql, params = []) {
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, params, (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
-    }
-
-    // Métodos específicos para agendamentos
     async createAppointment(appointment) {
-        const sql = `INSERT INTO appointments (id, user_id, title, description, date_time, status) 
-                     VALUES (?, ?, ?, ?, ?, ?)`;
-        return this.run(sql, [appointment.id, appointment.userId, appointment.title, 
-                             appointment.description, appointment.dateTime, appointment.status || 'active']);
+        const list = this.readAppointments();
+        list.push(appointment);
+        this.writeAppointments(list);
+        return { id: appointment.id, changes: 1 };
     }
 
     async getAppointments(userId) {
-        const sql = `SELECT * FROM appointments WHERE user_id = ? ORDER BY date_time ASC`;
-        return this.all(sql, [userId]);
+        const list = this.readAppointments();
+        if (!userId) return list;
+        return list.filter(a => a.userId === userId);
     }
 
-    // Métodos específicos para motoristas
-    async addMotorista(nome, cidade) {
-        const sql = `INSERT OR IGNORE INTO motoristas (nome, cidade) VALUES (?, ?)`;
-        return this.run(sql, [nome, cidade]);
-    }
-
-    async getMotoristasPorCidade(cidade) {
-        const sql = `SELECT nome FROM motoristas WHERE cidade = ? ORDER BY nome ASC`;
-        const rows = await this.all(sql, [cidade]);
-        return rows.map(row => row.nome);
-    }
-
-    close() {
-        if (this.db) {
-            this.db.close();
-        }
-    }
+    close() {}
 }
 
 // ===== MOTORISTA MANAGER =====
@@ -141,17 +87,48 @@ class DatabaseCore {
 class MotoristaManager {
     constructor() {
         this.storageKey = 'motoristas_por_cidade';
+        this.filePath = null;
+        this.motoristas = {};
+        this.storageMode = 'memory';
+        this.setupStorage();
         this.motoristas = this.loadMotoristas();
-        this.database = null;
     }
 
-    setDatabase(database) {
-        this.database = database;
+    setupStorage() {
+        try {
+            // Preferir arquivo no userData do Electron
+            const electron = typeof require !== 'undefined' ? require('electron') : null;
+            const app = electron && (electron.remote ? electron.remote.app : (electron.app || null));
+            if (app && app.getPath) {
+                const userData = app.getPath('userData');
+                const dataDir = path.join(userData, 'data');
+                if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+                this.filePath = path.join(dataDir, 'motoristas.json');
+                this.storageMode = 'file';
+                return;
+            }
+        } catch {}
+
+        // Fallback: localStorage
+        if (typeof localStorage !== 'undefined') {
+            this.storageMode = 'localStorage';
+            return;
+        }
+
+        // Último recurso: memória
+        this.storageMode = 'memory';
     }
 
     loadMotoristas() {
         try {
-            if (typeof localStorage !== 'undefined') {
+            if (this.storageMode === 'file' && this.filePath) {
+                if (fs.existsSync(this.filePath)) {
+                    const raw = fs.readFileSync(this.filePath, 'utf8');
+                    return JSON.parse(raw || '{}');
+                }
+                return {};
+            }
+            if (this.storageMode === 'localStorage') {
                 const stored = localStorage.getItem(this.storageKey);
                 return stored ? JSON.parse(stored) : {};
             }
@@ -164,8 +141,13 @@ class MotoristaManager {
 
     saveMotoristas() {
         try {
-            if (typeof localStorage !== 'undefined') {
+            if (this.storageMode === 'file' && this.filePath) {
+                fs.writeFileSync(this.filePath, JSON.stringify(this.motoristas, null, 2), 'utf8');
+                return;
+            }
+            if (this.storageMode === 'localStorage') {
                 localStorage.setItem(this.storageKey, JSON.stringify(this.motoristas));
+                return;
             }
         } catch (error) {
             console.error('Erro ao salvar motoristas:', error);
@@ -178,7 +160,6 @@ class MotoristaManager {
         cidade = cidade.trim();
         nomeMotorista = nomeMotorista.trim();
 
-        // Adicionar ao localStorage
         if (!this.motoristas[cidade]) {
             this.motoristas[cidade] = [];
         }
@@ -187,16 +168,6 @@ class MotoristaManager {
             this.motoristas[cidade].push(nomeMotorista);
             this.motoristas[cidade].sort();
             this.saveMotoristas();
-
-            // Adicionar ao banco de dados se disponível
-            if (this.database) {
-                try {
-                    await this.database.addMotorista(nomeMotorista, cidade);
-                } catch (error) {
-                    console.error('Erro ao salvar motorista no banco:', error);
-                }
-            }
-
             return true;
         }
         return false;
@@ -204,31 +175,14 @@ class MotoristaManager {
 
     async getMotoristasPorCidade(cidade) {
         if (!cidade) return [];
-
-        // Tentar buscar do banco primeiro
-        if (this.database) {
-            try {
-                const motoristasDB = await this.database.getMotoristasPorCidade(cidade);
-                if (motoristasDB.length > 0) {
-                    return motoristasDB;
-                }
-            } catch (error) {
-                console.error('Erro ao buscar motoristas do banco:', error);
-            }
-        }
-
-        // Fallback para localStorage
         return this.motoristas[cidade] || [];
     }
 
     buscarMotoristas(cidade, termo) {
         const motoristas = this.motoristas[cidade] || [];
         if (!termo) return motoristas;
-
         const termoLower = termo.toLowerCase();
-        return motoristas.filter(motorista => 
-            motorista.toLowerCase().includes(termoLower)
-        );
+        return motoristas.filter(motorista => motorista.toLowerCase().includes(termoLower));
     }
 }
 
@@ -391,8 +345,7 @@ class CoreUtils {
         this.security = new SecurityUtils();
         this.cache = new SimpleCache();
         
-        // Conectar motorista manager com database
-        this.motorista.setDatabase(this.database);
+        // MotoristaManager agora é file-based e não depende de database
     }
 
     async initialize() {

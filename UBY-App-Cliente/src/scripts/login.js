@@ -1,90 +1,12 @@
 const { ipcRenderer } = require('electron');
 
-// Função para controlar o preloader com transições suaves
+// Loader rápido: some após o DOM ficar pronto
 function initializePreloader() {
-    const preloader = document.getElementById('appPreloader');
-    const logoImage = document.querySelector('.preloader-logo-image');
-    const preloaderContent = document.querySelector('.preloader-content');
-    
-    if (!preloader || !logoImage) {
-        console.warn('Elementos do preloader não encontrados');
-        return;
-    }
-    
-    let preloaderHidden = false;
-    let minimumDisplayTime = 800; // Tempo mínimo para mostrar o preloader
-    let startTime = Date.now();
-    
-    const hidePreloader = () => {
-        if (preloaderHidden) return;
-        
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, minimumDisplayTime - elapsedTime);
-        
-        setTimeout(() => {
-            preloaderHidden = true;
-            
-            // Adicionar classe de saída suave
-            preloader.classList.add('hidden');
-            
-            // Aguardar a transição CSS completa (0.4s) + margem de segurança
-            setTimeout(() => {
-                if (preloader && preloader.parentElement) {
-                    preloader.remove();
-                }
-            }, 450);
-        }, remainingTime);
-    };
-    
-    // Função para verificar se todos os recursos estão carregados
-    const checkResourcesLoaded = () => {
-        // Verificar se a logo está carregada
-        if (logoImage.complete && logoImage.naturalWidth > 0) {
-            return true;
-        }
-        return false;
-    };
-    
-    // Aguardar carregamento da logo
-    logoImage.onload = () => {
-        console.log('Logo carregada com sucesso');
-        if (checkResourcesLoaded()) {
-            hidePreloader();
-        }
-    };
-    
-    // Fallback caso a logo não carregue
-    logoImage.onerror = () => {
-        console.warn('Erro ao carregar logo, removendo preloader');
-        hidePreloader();
-    };
-    
-    // Se a logo já estiver carregada
-    if (checkResourcesLoaded()) {
-        hidePreloader();
-    }
-    
-    // Fallback de segurança - remover após tempo máximo
+    const quick = document.getElementById('quickLoader');
+    if (!quick) return;
     setTimeout(() => {
-        if (!preloaderHidden) {
-            console.log('Fallback de segurança: removendo preloader após timeout');
-            hidePreloader();
-        }
-    }, 2500);
-    
-    // Preload de recursos críticos para evitar travamentos
-    const preloadCriticalResources = () => {
-        const criticalImages = [
-            '../../assets/logo.png'
-        ];
-        
-        criticalImages.forEach(src => {
-            const img = new Image();
-            img.src = src;
-        });
-    };
-    
-    preloadCriticalResources();
+        quick.parentElement && quick.parentElement.removeChild(quick);
+    }, 600);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

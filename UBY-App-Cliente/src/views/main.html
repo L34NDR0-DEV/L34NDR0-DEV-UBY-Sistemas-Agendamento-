@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://cdn.socket.io; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' ws://localhost:* http://localhost:* https://localhost:* https://cdn.socket.io https://nominatim.openstreetmap.org;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://cdn.socket.io; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdnjs.cloudflare.com; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' ws://localhost:* http://localhost:* https://localhost:* https://cdn.socket.io https://nominatim.openstreetmap.org https://api.github.com https://github.com;">
     <title>UBY - Sistema de Agendamentos</title>
     
     <!-- Configurações de ícone da aplicação -->
@@ -17,22 +17,20 @@
     <link rel="stylesheet" href="../styles/updater.css">
     <link rel="stylesheet" href="../styles/update-system.css">
     <link rel="stylesheet" href="../styles/sound-modal.css">
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Preloader para garantir carregamento da logo -->
-    <div id="appPreloader" class="app-preloader">
-        <div class="preloader-content">
-            <div class="preloader-logo">
-                <img src="../../assets/logo.png" alt="UBY Logo" class="preloader-logo-image" id="preloaderLogo">
-            </div>
-            <div class="preloader-spinner">
-                <div class="spinner"></div>
-            </div>
-            <div class="preloader-text">Carregando UBY Agendamentos...</div>
-        </div>
-    </div>
+    <!-- Loader rápido -->
+    <style>
+        .quick-loader{position:fixed;inset:0;background:#0b0b0e;display:flex;align-items:center;justify-content:center;z-index:9999}
+        .quick-loader .dot{width:10px;height:10px;margin:0 4px;border-radius:50%;background:#FF6B00;animation:ql 0.9s infinite ease-in-out}
+        .quick-loader .dot:nth-child(2){animation-delay:0.15s}
+        .quick-loader .dot:nth-child(3){animation-delay:0.3s}
+        @keyframes ql{0%,80%,100%{transform:scale(0.6);opacity:.6}40%{transform:scale(1);opacity:1}}
+    </style>
+    <div id="quickLoader" class="quick-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 
     <!-- Nova Barra de Janela Única -->
     <div class="custom-window-bar">
@@ -70,15 +68,19 @@
         </div>
         
         <div class="header-center">
-            <button class="header-btn user-btn" id="userName" disabled>
-                <div class="user-avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </div>
-                <span class="btn-text" id="userNameText"></span>
-            </button>
+            <div class="user-profile-container">
+                <button class="header-btn user-btn" id="userName" disabled>
+                    <div class="user-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <span class="btn-text" id="userNameText"></span>
+                </button>
+                
+
+            </div>
             
             <!-- Botão de Gerenciamento de Usuários (apenas para Nathan) -->
             <button class="header-btn" id="userManagementBtn" style="display: none;">
@@ -1156,6 +1158,7 @@
                             <option value="Gerente">Gerente</option>
                             <option value="Sênior">Sênior</option>
                             <option value="Atendente">Atendente</option>
+                            <option value="Suporte">Suporte</option>
                         </select>
                     </div>
                     
@@ -1176,15 +1179,15 @@
         </div>
     </div>
 
+
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="../utils/core-utils.js"></script>
     <script src="../utils/performance-cache.js"></script>
     <script src="../utils/system-helpers.js"></script>
     <script src="../scripts/motorista-autocomplete.js"></script>
-    <script src="../scripts/websocket-client.js"></script>
     <script src="../scripts/sound-manager.js"></script>
     <script src="../scripts/voice-manager.js"></script>
     <script src="../scripts/voice-manager-aquidauana.js"></script>
@@ -1196,7 +1199,7 @@
     <script src="../scripts/reminder-system.js"></script>
     <script src="../assets/icons/update-icons.js"></script>
     <script src="../scripts/update-config.js"></script>
-    <script src="../scripts/update-system.js"></script>
+    <!-- Removido update-system.js para evitar duplicidade com updater.js -->
     <script src="../scripts/updater.js"></script>
     <script src="../scripts/sound-modal.js"></script>
     <script src="../scripts/user-management.js"></script>
