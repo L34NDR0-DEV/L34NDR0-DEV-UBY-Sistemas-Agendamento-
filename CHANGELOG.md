@@ -2,7 +2,24 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [1.0.1] - 2025-01-17
+## [1.0.1] - 2025-01-28
+
+### 🔐 Expansão de Permissões de Usuário
+- **Novos Usuários**: Adicionados usuários Jhonny e Mauri com role "Suporte"
+- **Permissões Expandidas**: Usuários com role "Suporte" agora têm acesso ao gerenciador de usuários
+- **Correção de Carregamento**: Implementada sincronização forçada do arquivo users.json do userData
+
+### 🛠️ Melhorias Técnicas
+- **Build Otimizado**: Desabilitada recompilação nativa para resolver problemas de dependências
+- **Limpeza de Código**: Removido sistema de chat e dependências não utilizadas
+- **Logs de Debug**: Adicionados logs para rastreamento de carregamento de usuários
+
+### 🗂️ Estrutura do Projeto
+- **Remoção de Arquivos**: Removido diretório UBY-Servidor-Dashboard completo
+- **Configuração Atualizada**: Ajustes na configuração do electron-builder
+- **Versioning**: Atualizada versão para v1.0.1 em todos os arquivos relevantes
+
+## [1.0.2] - 2025-01-17
 
 ### 🔄 Sistema de Atualização Modernizado
 - **Interface Moderna**: Nova interface visual para o sistema de atualizações
