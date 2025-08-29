@@ -1,6 +1,6 @@
 # UBY - Sistema de Agendamento
 
-**Versão 1.0.1** - Sistema completo de agendamento com arquitetura distribuída, sincronização em tempo real, proteção DDoS avançada e funcionalidades de segurança.
+**Versão 1.0.1** - Sistema completo de agendamento com arquitetura distribuída cliente-servidor, sincronização em tempo real, proteção DDoS avançada e funcionalidades de segurança empresarial.
 
 ## 📋 Descrição
 
@@ -145,10 +145,16 @@ O sistema implementa sincronização automática e em tempo real:
 
 ### Passos
 
-1. **Clone o repositório**:
+1. **Clone o repositório do cliente**:
    ```bash
-   git clone https://github.com/L34NDR0-DEV/UBY--Sistemas-Agendamento-1.0.0.git
-   cd UBY--Sistemas-Agendamento-1.0.0
+   git clone https://github.com/L34NDR0-DEV/L34NDR0-DEV-UBY-Sistemas-Agendamento-.git
+   cd L34NDR0-DEV-UBY-Sistemas-Agendamento-
+   ```
+
+   **Para o servidor**:
+   ```bash
+   git clone https://github.com/L34NDR0-DEV/UBY-Servidor.git
+   cd UBY-Servidor
    ```
 
 2. **Instale as dependências**:
@@ -220,29 +226,48 @@ O sistema implementa sincronização automática e em tempo real:
 
 ## 🛠️ Estrutura do Projeto
 
+### 📁 Repositório Cliente
 ```
-├── app/                    # Aplicação Electron principal
-├── src/
-│   ├── assets/            # Recursos estáticos
-│   ├── data/              # Dados da aplicação
-│   ├── scripts/           # Scripts JavaScript
-│   │   ├── voice-manager.js           # Sistema de voz padrão
-│   │   ├── voice-manager-aquidauana.js # Sistema de voz especializado
-│   │   ├── sound-manager.js           # Gerenciamento de sons
-│   │   ├── sound-modal.js             # Modal de configuração
-│   │   ├── reminder-system.js         # Sistema de lembretes
-│   │   └── ...
-│   ├── styles/            # Arquivos CSS
-│   │   ├── sound-modal.css            # Estilos do modal de som
-│   │   └── ...
-│   ├── utils/             # Utilitários e otimizações
-│   │   ├── core-utils.js              # Utilitários essenciais (database, motorista, security)
-│   │   ├── performance-cache.js       # Sistema de cache e otimização de performance
-│   │   └── system-helpers.js          # Utilitários de sistema e configuração
-│   │   └── ...
-│   └── views/             # Páginas HTML
-├── assets/                # Assets principais
-└── package.json           # Configurações do projeto
+L34NDR0-DEV-UBY-Sistemas-Agendamento-/
+├── UBY-App-Cliente/       # Aplicação Electron principal
+│   ├── app/               # Configuração do Electron
+│   ├── src/
+│   │   ├── assets/        # Recursos estáticos
+│   │   ├── data/          # Dados da aplicação
+│   │   ├── scripts/       # Scripts JavaScript
+│   │   │   ├── voice-manager.js           # Sistema de voz padrão
+│   │   │   ├── voice-manager-aquidauana.js # Sistema de voz especializado
+│   │   │   ├── sound-manager.js           # Gerenciamento de sons
+│   │   │   ├── sound-modal.js             # Modal de configuração
+│   │   │   ├── reminder-system.js         # Sistema de lembretes
+│   │   │   └── ...
+│   │   ├── styles/        # Arquivos CSS
+│   │   │   ├── sound-modal.css            # Estilos do modal de som
+│   │   │   └── ...
+│   │   ├── utils/         # Utilitários e otimizações
+│   │   │   ├── core-utils.js              # Utilitários essenciais
+│   │   │   ├── performance-cache.js       # Sistema de cache
+│   │   │   └── system-helpers.js          # Utilitários de sistema
+│   │   └── views/         # Páginas HTML
+│   ├── assets/            # Assets principais
+│   └── package.json       # Configurações do cliente
+├── .github/workflows/     # CI/CD e automação
+├── server-package.json    # Configurações do servidor
+└── package.json           # Configurações gerais
+```
+
+### 🖥️ Repositório Servidor
+```
+UBY-Servidor/
+├── src/                   # Código fonte do servidor
+│   ├── server/            # Servidor WebSocket
+│   ├── api/               # APIs REST
+│   ├── middleware/        # Middleware de segurança
+│   ├── utils/             # Utilitários do servidor
+│   └── config/            # Configurações
+├── ssl/                   # Certificados SSL
+├── logs/                  # Logs do servidor
+└── package.json           # Dependências do servidor
 ```
 
 ## 🔧 Scripts Disponíveis
@@ -304,11 +329,31 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 - **Versão**: 1.0.0
 - **Status**: Em desenvolvimento ativo
 
+## 📦 Repositórios
+
+- **Cliente**: [L34NDR0-DEV-UBY-Sistemas-Agendamento-](https://github.com/L34NDR0-DEV/L34NDR0-DEV-UBY-Sistemas-Agendamento-)
+- **Servidor**: [UBY-Servidor](https://github.com/L34NDR0-DEV/UBY-Servidor)
+
+## 🚀 Deploy
+
+### Cliente
+1. Clone o repositório cliente
+2. Instale as dependências: `npm install`
+3. Configure o servidor de destino
+4. Execute: `npm start`
+
+### Servidor
+1. Clone o repositório servidor
+2. Instale as dependências: `npm install`
+3. Configure certificados SSL
+4. Execute: `npm run server`
+
 ## 📞 Suporte
 
 Para suporte técnico ou dúvidas:
-- Abra uma issue no GitHub
-- Entre em contato através do sistema
+- Abra uma issue no repositório correspondente
+- Cliente: [Issues do Cliente](https://github.com/L34NDR0-DEV/L34NDR0-DEV-UBY-Sistemas-Agendamento-/issues)
+- Servidor: [Issues do Servidor](https://github.com/L34NDR0-DEV/UBY-Servidor/issues)
 
 ---
 

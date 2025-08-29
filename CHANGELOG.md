@@ -4,6 +4,12 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ## [1.0.1] - 2025-01-28
 
+### 🚀 Migração para Arquitetura Distribuída
+- **Repositório Servidor**: Criado repositório dedicado para o servidor ([UBY-Servidor](https://github.com/L34NDR0-DEV/UBY-Servidor))
+- **Repositório Cliente**: Migrado para novo repositório ([L34NDR0-DEV-UBY-Sistemas-Agendamento-](https://github.com/L34NDR0-DEV/L34NDR0-DEV-UBY-Sistemas-Agendamento-))
+- **Separação de Responsabilidades**: Cliente e servidor agora em repositórios independentes
+- **Tag v1.0.1**: Criada e sincronizada em ambos os repositórios
+
 ### 🔐 Expansão de Permissões de Usuário
 - **Novos Usuários**: Adicionados usuários Jhonny e Mauri com role "Suporte"
 - **Permissões Expandidas**: Usuários com role "Suporte" agora têm acesso ao gerenciador de usuários
@@ -13,11 +19,18 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - **Build Otimizado**: Desabilitada recompilação nativa para resolver problemas de dependências
 - **Limpeza de Código**: Removido sistema de chat e dependências não utilizadas
 - **Logs de Debug**: Adicionados logs para rastreamento de carregamento de usuários
+- **Sistema de Atualizações**: Configurado para novos repositórios GitHub
 
 ### 🗂️ Estrutura do Projeto
 - **Remoção de Arquivos**: Removido diretório UBY-Servidor-Dashboard completo
 - **Configuração Atualizada**: Ajustes na configuração do electron-builder
 - **Versioning**: Atualizada versão para v1.0.1 em todos os arquivos relevantes
+- **Referências de Repositório**: Atualizadas todas as referências para novos repositórios
+
+### 📦 Deploy e Distribuição
+- **CI/CD**: Configuração de workflows para ambos os repositórios
+- **Releases**: Sistema de releases independente para cliente e servidor
+- **Documentação**: README e CHANGELOG atualizados com nova arquitetura
 
 ## [1.0.2] - 2025-01-17
 
