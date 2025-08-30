@@ -2,7 +2,43 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-## [1.0.1] - 2025-01-28
+## [1.0.1] - 2025-01-30
+
+### 🗺️ Sistema de Conversão de Coordenadas
+- **Extração de Coordenadas**: Sistema avançado para extrair coordenadas de URLs do Google Maps
+  - Suporte a múltiplos formatos de URL (maps.google.com, goo.gl, etc.)
+  - Detecção automática de coordenadas em texto (lat, lng)
+  - Processamento de URLs encurtadas e parâmetros complexos
+- **Modal de Mapa Aprimorado**: Integração completa com sistema de mapas nativo
+  - Abertura automática de coordenadas extraídas no modal
+  - Suporte a endereços e coordenadas simultâneos
+  - Geocodificação inteligente com fallback para API Nominatim
+- **Logs de Debug**: Sistema detalhado de logging para rastreamento
+  - Logs de extração de coordenadas
+  - Logs de geocodificação via API
+  - Monitoramento de processamento de URLs
+
+### 🔔 Sistema de Notificações Aprimorado
+- **Notificações Personalizadas**: Inclusão de informações detalhadas sobre atendentes
+  - Nome do atendente logado nas notificações de atraso
+  - Nome do criador do agendamento
+  - Diferenciação inteligente entre atendente logado e criador
+- **Mensagens de Voz Inteligentes**: Sistema de voz aprimorado
+  - Mensagens personalizadas baseadas no contexto
+  - Identificação quando o atendente logado criou o agendamento
+  - Suporte para versões específicas (Aquidauana e padrão)
+- **Notificações Nativas**: Melhorias nas notificações do Windows
+  - Informações completas sobre responsáveis pelo agendamento
+  - Formatação clara e informativa
+  - Integração com sistema de preferências do usuário
+
+### 🔧 Melhorias Técnicas
+- **Função extractCoordinatesFromUrl**: Nova função para processamento de URLs
+- **Função isCoordinates**: Aprimorada para detectar coordenadas em URLs
+- **Geocodificação Avançada**: Priorização de coordenadas extraídas sobre geocodificação
+- **Compatibilidade**: Suporte mantido para todas as funcionalidades existentes
+
+## [1.0.6] - 2025-01-28
 
 ### 🚀 Migração para Arquitetura Distribuída
 - **Repositório Servidor**: Criado repositório dedicado para o servidor ([UBY-Servidor](https://github.com/L34NDR0-DEV/UBY-Servidor))

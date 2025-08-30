@@ -2973,6 +2973,76 @@ input:checked + .toggle-slider:before {
     position: relative;
 }
 
+/* Estilos para links do Google Maps */
+.agendamento-card.postit-style .postit-value.endereco .maps-url {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.agendamento-card.postit-style .postit-value.endereco .maps-url:hover {
+    color: #1557b0;
+    border-bottom-color: #1557b0;
+    text-decoration: none;
+}
+
+.agendamento-card.postit-style .postit-value.endereco .maps-url:active {
+    color: #0d47a1;
+}
+
+/* Tema escuro para links do Google Maps */
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .maps-url {
+    color: #8ab4f8;
+}
+
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .maps-url:hover {
+    color: #aecbfa;
+    border-bottom-color: #aecbfa;
+}
+
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .maps-url:active {
+    color: #c8e6c9;
+}
+
+/* Estilos para links de coordenadas */
+.agendamento-card.postit-style .postit-value.endereco .coordinates-link {
+    color: #d73027;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.agendamento-card.postit-style .postit-value.endereco .coordinates-link:hover {
+    color: #a50e0e;
+    border-bottom-color: #a50e0e;
+    text-decoration: none;
+}
+
+.agendamento-card.postit-style .postit-value.endereco .coordinates-link:active {
+    color: #7f0000;
+}
+
+/* Tema escuro para links de coordenadas */
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .coordinates-link {
+    color: #ff8a80;
+}
+
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .coordinates-link:hover {
+    color: #ffab91;
+    border-bottom-color: #ffab91;
+}
+
+[data-theme="dark"] .agendamento-card.postit-style .postit-value.endereco .coordinates-link:active {
+    color: #ffccbc;
+}
+
 /* Truncamento para nomes de cidade longos */
 .agendamento-card.postit-style .postit-value.cidade {
     max-width: 180px;

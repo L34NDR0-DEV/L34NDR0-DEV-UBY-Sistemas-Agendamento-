@@ -381,7 +381,8 @@ class ReminderSystem {
             window.voiceManagerAquidauana.speakAgendamentoAquidauanaAtrasado(
                 agendamento.nomeCliente,
                 agendamento.horario,
-                minutesLate
+                minutesLate,
+                agendamento.atendente
             );
             
             console.log(`[ReminderSystem] ✓ Alerta de ATRASO AQUIDAUANA enviado para ${agendamento.nomeCliente} (${agendamento.horario} horário local, ${minutesLate} min atraso)`);
@@ -391,7 +392,8 @@ class ReminderSystem {
                 agendamento.nomeCliente,
                 agendamento.horario,
                 agendamento.cidade,
-                minutesLate
+                minutesLate,
+                agendamento.atendente
             );
             
             console.log(`[ReminderSystem] ✓ Alerta de atraso padrão enviado para ${agendamento.nomeCliente} (${agendamento.cidade}, ${minutesLate} min atraso)`);

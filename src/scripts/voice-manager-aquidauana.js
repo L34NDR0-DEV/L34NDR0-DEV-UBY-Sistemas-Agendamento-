@@ -335,11 +335,14 @@ class VoiceManagerAquidauana {
         console.log(`[VoiceManagerAquidauana] Lembrete enviado: ${nomeCliente} em ${minutosRestantes} min - Horário local: ${horarioLocal}`);
     }
     
-    speakAgendamentoAquidauanaAtrasado(nomeCliente, horario, minutosAtraso) {
+    speakAgendamentoAquidauanaAtrasado(nomeCliente, horario, minutosAtraso, atendente) {
         const isStoredInBrasilia = true;
         const horarioLocal = this.formatTimeForSpeech(horario, !isStoredInBrasilia);
         const horarioFormatado = this.formatTimeWithTimezoneForSpeech(horario);
         const tempoFormatado = this.formatMinutesForSpeech(minutosAtraso);
+        
+        // Obter nome do atendente logado
+        const atendenteLogado = window.currentUser ? (window.currentUser.displayName || window.currentUser.username) : null;
         
         let text;
         
@@ -353,6 +356,23 @@ class VoiceManagerAquidauana {
             text = `Alerta Aquidauana! Agendamento de ${nomeCliente} às ${horarioFormatado} está atrasado em ${tempoFormatado}. Favor verificar imediatamente!`;
         }
         
+        // Adicionar informações dos atendentes
+        if (atendenteLogado && atendente) {
+            if (atendenteLogado === atendente) {
+                // Mesmo atendente logado e criador
+                text += `. Atenção atendente ${atendenteLogado}, o agendamento que você criou está atrasado`;
+            } else {
+                // Atendentes diferentes
+                text += `. Atenção atendente ${atendenteLogado}, o agendamento criado pelo atendente ${atendente} está atrasado`;
+            }
+        } else if (atendenteLogado) {
+            // Apenas atendente logado disponível
+            text += `. Atenção atendente ${atendenteLogado}, esse agendamento está atrasado`;
+        } else if (atendente) {
+            // Apenas criador disponível
+            text += `. Atenção, o agendamento criado pelo atendente ${atendente} está atrasado`;
+        }
+        
         this.addToQueue(text, { 
             priority: 3, // Prioridade máxima
             type: 'atrasado',
@@ -363,10 +383,12 @@ class VoiceManagerAquidauana {
         this.showAquidauanaNativeNotification({
             cliente: nomeCliente,
             horario: horarioLocal, // Usar horário local na notificação também
-            minutosAtraso: minutosAtraso
+            minutosAtraso: minutosAtraso,
+            atendente: atendente,
+            atendenteLogado: atendenteLogado
         });
         
-        console.log(`[VoiceManagerAquidauana] Alerta de atraso: ${nomeCliente} - ${minutosAtraso} min - Horário local: ${horarioLocal}`);
+        console.log(`[VoiceManagerAquidauana] Alerta de atraso: ${nomeCliente} - ${minutosAtraso} min - Horário local: ${horarioLocal} - Atendente: ${atendente}`);
     }
     
     speakAgendamentoAquidauanaCriado(nomeCliente, horario, data) {
@@ -444,7 +466,23 @@ class VoiceManagerAquidauana {
         
         try {
             const title = '🚨 AQUIDAUANA - Agendamento Atrasado!';
-            const body = `Cliente: ${agendamento.cliente}\nHorário: ${agendamento.horario}\nAtraso: ${agendamento.minutosAtraso} minutos\n\n⚠️ VERIFICAÇÃO URGENTE NECESSÁRIA`;
+            
+            // Construir corpo da notificação com informações dos atendentes
+            let body = `Cliente: ${agendamento.cliente}\nHorário: ${agendamento.horario}\nAtraso: ${agendamento.minutosAtraso} minutos`;
+            
+            if (agendamento.atendenteLogado && agendamento.atendente) {
+                if (agendamento.atendenteLogado === agendamento.atendente) {
+                    body += `\nAtendente: ${agendamento.atendenteLogado} (você criou este agendamento)`;
+                } else {
+                    body += `\nAtendente logado: ${agendamento.atendenteLogado}\nCriado por: ${agendamento.atendente}`;
+                }
+            } else if (agendamento.atendenteLogado) {
+                body += `\nAtendente logado: ${agendamento.atendenteLogado}`;
+            } else if (agendamento.atendente) {
+                body += `\nCriado por: ${agendamento.atendente}`;
+            }
+            
+            body += `\n\n⚠️ VERIFICAÇÃO URGENTE NECESSÁRIA`;
             
             const result = await window.ipcRenderer.invoke('showNativeNotification', {
                 title: title,

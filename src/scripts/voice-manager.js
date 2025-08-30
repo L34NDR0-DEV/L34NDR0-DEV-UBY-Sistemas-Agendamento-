@@ -385,12 +385,13 @@ class VoiceManager {
         this.speak(text, { priority: 1 });
     }
     
-    speakAgendamentoAtrasado(nomeCliente, horario, cidade, minutosAtraso) {
+    speakAgendamentoAtrasado(nomeCliente, horario, cidade, minutosAtraso, atendente) {
         console.log('[VoiceManager] speakAgendamentoAtrasado chamado:', {
             nomeCliente,
             horario,
             cidade,
             minutosAtraso,
+            atendente,
             enabled: this.enabled,
             synthesis: !!this.synthesis
         });
@@ -401,7 +402,29 @@ class VoiceManager {
             : cidade;
         
         const tempoFormatado = this.formatMinutesForSpeech(minutosAtraso);
-        const text = `Atenção! Agendamento de ${nomeCliente} às ${horarioLocal} em ${cidadeInfo} está atrasado em ${tempoFormatado}`;
+        
+        // Obter nome do atendente logado
+        const atendenteLogado = window.currentUser ? (window.currentUser.displayName || window.currentUser.username) : null;
+        
+        // Construir mensagem base
+        let text = `Atenção! Agendamento de ${nomeCliente} às ${horarioLocal} em ${cidadeInfo} está atrasado em ${tempoFormatado}`;
+        
+        // Adicionar informações dos atendentes
+        if (atendenteLogado && atendente) {
+            if (atendenteLogado === atendente) {
+                // Mesmo atendente logado e criador
+                text += `. Atenção atendente ${atendenteLogado}, o agendamento que você criou está atrasado`;
+            } else {
+                // Atendentes diferentes
+                text += `. Atenção atendente ${atendenteLogado}, o agendamento criado pelo atendente ${atendente} está atrasado`;
+            }
+        } else if (atendenteLogado) {
+            // Apenas atendente logado disponível
+            text += `. Atenção atendente ${atendenteLogado}, esse agendamento está atrasado`;
+        } else if (atendente) {
+            // Apenas criador disponível
+            text += `. Atenção, o agendamento criado pelo atendente ${atendente} está atrasado`;
+        }
         
         console.log('[VoiceManager] Texto a ser falado:', text);
         
@@ -410,7 +433,9 @@ class VoiceManager {
             cliente: nomeCliente,
             horario: horario,
             cidade: cidade,
-            minutosAtraso: minutosAtraso
+            minutosAtraso: minutosAtraso,
+            atendente: atendente,
+            atendenteLogado: atendenteLogado
         });
         
         this.speakUrgent(text, { 
@@ -437,7 +462,21 @@ class VoiceManager {
         
         try {
             const title = 'Agendamento Atrasado!';
-            const body = `${agendamento.cliente} - ${agendamento.cidade}\nHorário: ${agendamento.horario}\nAtraso: ${agendamento.minutosAtraso} minutos`;
+            
+            // Construir corpo da notificação com informações dos atendentes
+            let body = `${agendamento.cliente} - ${agendamento.cidade}\nHorário: ${agendamento.horario}\nAtraso: ${agendamento.minutosAtraso} minutos`;
+            
+            if (agendamento.atendenteLogado && agendamento.atendente) {
+                if (agendamento.atendenteLogado === agendamento.atendente) {
+                    body += `\nAtendente: ${agendamento.atendenteLogado} (você criou este agendamento)`;
+                } else {
+                    body += `\nAtendente logado: ${agendamento.atendenteLogado}\nCriado por: ${agendamento.atendente}`;
+                }
+            } else if (agendamento.atendenteLogado) {
+                body += `\nAtendente logado: ${agendamento.atendenteLogado}`;
+            } else if (agendamento.atendente) {
+                body += `\nCriado por: ${agendamento.atendente}`;
+            }
             
             const result = await window.ipcRenderer.invoke('showNativeNotification', {
                 title: title,

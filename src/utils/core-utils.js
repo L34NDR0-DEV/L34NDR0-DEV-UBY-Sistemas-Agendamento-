@@ -182,7 +182,13 @@ class MotoristaManager {
         const motoristas = this.motoristas[cidade] || [];
         if (!termo) return motoristas;
         const termoLower = termo.toLowerCase();
-        return motoristas.filter(motorista => motorista.toLowerCase().includes(termoLower));
+        return motoristas.filter(motorista => {
+            // Verificar se motorista é uma string válida antes de chamar toLowerCase
+            if (typeof motorista !== 'string' || !motorista) {
+                return false;
+            }
+            return motorista.toLowerCase().includes(termoLower);
+        });
     }
 }
 

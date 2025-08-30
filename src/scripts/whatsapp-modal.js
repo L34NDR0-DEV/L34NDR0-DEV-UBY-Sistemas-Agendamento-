@@ -106,14 +106,24 @@ class WhatsAppModal {
         const destinoSpan = document.getElementById('whatsappPreviewDestino');
         
         if (this.currentAgendamento.enderecoOrigem) {
-            origemSpan.textContent = this.currentAgendamento.enderecoOrigem;
+            // Usar formatAddress se disponível, senão usar texto simples
+            if (typeof formatAddress === 'function') {
+                origemSpan.innerHTML = formatAddress(this.currentAgendamento.enderecoOrigem);
+            } else {
+                origemSpan.textContent = this.currentAgendamento.enderecoOrigem;
+            }
             origemContainer.style.display = 'flex';
         } else {
             origemContainer.style.display = 'none';
         }
         
         if (this.currentAgendamento.enderecoDestino) {
-            destinoSpan.textContent = this.currentAgendamento.enderecoDestino;
+            // Usar formatAddress se disponível, senão usar texto simples
+            if (typeof formatAddress === 'function') {
+                destinoSpan.innerHTML = formatAddress(this.currentAgendamento.enderecoDestino);
+            } else {
+                destinoSpan.textContent = this.currentAgendamento.enderecoDestino;
+            }
             destinoContainer.style.display = 'flex';
         } else {
             destinoContainer.style.display = 'none';
@@ -131,9 +141,13 @@ class WhatsAppModal {
             paradas.forEach((parada, index) => {
                 const paradaElement = document.createElement('div');
                 paradaElement.className = 'preview-item';
+                
+                // Usar formatAddress se disponível, senão usar texto simples
+                const formattedParada = (typeof formatAddress === 'function') ? formatAddress(parada) : parada;
+                
                 paradaElement.innerHTML = `
                     <i class="fas fa-route item-icon" style="color: #ff9800;"></i>
-                    <strong>Parada ${index + 1}:</strong> <span>${parada}</span>
+                    <strong>Parada ${index + 1}:</strong> <span>${formattedParada}</span>
                 `;
                 paradasContainer.appendChild(paradaElement);
             });

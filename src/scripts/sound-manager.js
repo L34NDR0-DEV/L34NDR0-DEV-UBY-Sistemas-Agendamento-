@@ -26,10 +26,10 @@ class SoundManager {
         // Definir sons disponíveis
         this.soundFiles = {
             alert: '../../assets/som.mp3',
-            notification: '../../assets/notification.mp3',
-            success: '../../assets/success.mp3',
-            error: '../../assets/error.mp3',
-            reminder: '../../assets/reminder.mp3'
+            notification: '../../assets/som.mp3',
+            success: '../../assets/som.mp3',
+            error: '../../assets/som.mp3',
+            reminder: '../../assets/som.mp3'
         };
         
         // Pré-carregar sons principais

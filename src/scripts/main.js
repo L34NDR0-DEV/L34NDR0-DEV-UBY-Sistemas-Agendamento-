@@ -957,6 +957,157 @@ function filterAgendamentos() {
 }
 
 // Criar card do agendamento
+// Função para detectar se um texto é uma URL do Google Maps
+function isGoogleMapsUrl(text) {
+    if (!text) return false;
+    const googleMapsPatterns = [
+        /https?:\/\/(www\.)?google\.[a-z]{2,}\/maps/i,
+        /https?:\/\/(www\.)?maps\.google\.[a-z]{2,}/i,
+        /https?:\/\/goo\.gl\/maps/i,
+        /https?:\/\/maps\.app\.goo\.gl/i
+    ];
+    return googleMapsPatterns.some(pattern => pattern.test(text.trim()));
+}
+
+// Função para extrair coordenadas de URLs do Google Maps
+function extractCoordinatesFromUrl(url) {
+    if (!url || typeof url !== 'string') return null;
+    
+    console.log('[DEBUG extractCoordinatesFromUrl] Extraindo coordenadas de URL:', url);
+    
+    // Padrões para extrair coordenadas de URLs do Google Maps
+    const urlPatterns = [
+        // Formato: ?q=lat,lng
+        /[?&]q=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+        // Formato: @lat,lng
+        /@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+        // Formato: /place/name/@lat,lng
+        /\/place\/[^@]*@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+        // Formato: /maps/@lat,lng
+        /\/maps\/@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+        // Formato: ll=lat,lng
+        /[?&]ll=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+        // Formato: center=lat,lng
+        /[?&]center=(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/
+    ];
+    
+    for (const pattern of urlPatterns) {
+        const match = url.match(pattern);
+        if (match) {
+            const lat = parseFloat(match[1]);
+            const lng = parseFloat(match[2]);
+            console.log('[DEBUG extractCoordinatesFromUrl] Coordenadas extraídas:', { lat, lng });
+            return { lat, lng, formatted: `${lat}, ${lng}` };
+        }
+    }
+    
+    console.log('[DEBUG extractCoordinatesFromUrl] Nenhuma coordenada encontrada na URL');
+    return null;
+}
+
+// Função para detectar coordenadas geográficas
+function isCoordinates(text) {
+    if (!text || typeof text !== 'string') return false;
+    
+    console.log('[DEBUG isCoordinates] Verificando se é coordenada:', text);
+    
+    // Primeiro verificar se é uma URL com coordenadas
+    if (isGoogleMapsUrl(text)) {
+        const extracted = extractCoordinatesFromUrl(text);
+        if (extracted) {
+            console.log('[DEBUG isCoordinates] URL contém coordenadas:', extracted.formatted);
+            return true;
+        }
+    }
+    
+    // Padrões para coordenadas em diferentes formatos
+    const coordinatePatterns = [
+        // Formato: -15.123456, -56.789012 ou 15.123456, 56.789012
+        /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/,
+        // Formato: (-15.123456, -56.789012)
+        /^\(-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+\)$/,
+        // Formato: lat: -15.123456, lng: -56.789012
+        /^lat:\s*-?\d{1,3}\.\d+,\s*lng:\s*-?\d{1,3}\.\d+$/i,
+        // Formato: latitude: -15.123456, longitude: -56.789012
+        /^latitude:\s*-?\d{1,3}\.\d+,\s*longitude:\s*-?\d{1,3}\.\d+$/i
+    ];
+    
+    const result = coordinatePatterns.some(pattern => pattern.test(text.trim()));
+    console.log('[DEBUG isCoordinates] Resultado da verificação:', result);
+    return result;
+}
+
+// Função para extrair coordenadas e criar URL do Google Maps
+function createMapsUrlFromCoordinates(coordinates) {
+    const text = coordinates.trim();
+    let lat, lng;
+    
+    // Formato: -15.123456, -56.789012
+    if (/^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/.test(text)) {
+        const parts = text.split(',');
+        lat = parseFloat(parts[0].trim());
+        lng = parseFloat(parts[1].trim());
+    }
+    // Formato: (-15.123456, -56.789012)
+    else if (/^\(-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+\)$/.test(text)) {
+        const cleanText = text.replace(/[()]/g, '');
+        const parts = cleanText.split(',');
+        lat = parseFloat(parts[0].trim());
+        lng = parseFloat(parts[1].trim());
+    }
+    // Formato: lat: -15.123456, lng: -56.789012
+    else if (/^lat:\s*-?\d{1,3}\.\d+,\s*lng:\s*-?\d{1,3}\.\d+$/i.test(text)) {
+        const latMatch = text.match(/lat:\s*(-?\d{1,3}\.\d+)/i);
+        const lngMatch = text.match(/lng:\s*(-?\d{1,3}\.\d+)/i);
+        lat = parseFloat(latMatch[1]);
+        lng = parseFloat(lngMatch[1]);
+    }
+    // Formato: latitude: -15.123456, longitude: -56.789012
+    else if (/^latitude:\s*-?\d{1,3}\.\d+,\s*longitude:\s*-?\d{1,3}\.\d+$/i.test(text)) {
+        const latMatch = text.match(/latitude:\s*(-?\d{1,3}\.\d+)/i);
+        const lngMatch = text.match(/longitude:\s*(-?\d{1,3}\.\d+)/i);
+        lat = parseFloat(latMatch[1]);
+        lng = parseFloat(lngMatch[1]);
+    }
+    
+    if (lat !== undefined && lng !== undefined) {
+        return `https://www.google.com/maps?q=${lat},${lng}`;
+    }
+    
+    return null;
+}
+
+// Função para formatar endereço (URL, coordenadas ou texto normal)
+function formatAddress(address, agendamentoId = null) {
+    if (!address) return '';
+    
+    console.log('[DEBUG formatAddress] Processando endereço:', address, 'com agendamentoId:', agendamentoId);
+    
+    // Verificar se é URL do Google Maps
+    if (isGoogleMapsUrl(address)) {
+        console.log('[DEBUG formatAddress] Detectado como URL do Google Maps');
+        return `<a href="${address}" target="_blank" class="maps-url" title="Abrir no Google Maps">${address}</a>`;
+    }
+    
+    // Verificar se são coordenadas
+    if (isCoordinates(address)) {
+        console.log('[DEBUG formatAddress] Detectado como coordenadas');
+        if (agendamentoId) {
+            console.log('[DEBUG formatAddress] Criando link clicável para coordenadas com agendamentoId:', agendamentoId);
+            // Tornar coordenadas clicáveis para abrir modal do sistema
+            return `<a href="#" onclick="openLocationModal('${agendamentoId}'); return false;" class="coordinates-link" title="Abrir no mapa do sistema">${address}</a>`;
+        } else {
+            // Fallback para Google Maps se não tiver ID do agendamento
+            const mapsUrl = createMapsUrlFromCoordinates(address);
+            if (mapsUrl) {
+                return `<a href="${mapsUrl}" target="_blank" class="coordinates-link" title="Abrir coordenadas no Google Maps">${address}</a>`;
+            }
+        }
+    }
+    
+    return address;
+}
+
 function createAgendamentoCard(agendamento) {
     console.log('=== INÍCIO createAgendamentoCard ===');
     console.log('Criando card para agendamento:', agendamento.id, agendamento.nomeCliente);
@@ -1047,34 +1198,34 @@ function createAgendamentoCard(agendamento) {
                 ${agendamento.enderecoOrigem ? `
                     <div class="postit-row">
                         <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-                        <span class="postit-label">Origem:</span> <span class="postit-value endereco" title="${agendamento.enderecoOrigem}">${agendamento.enderecoOrigem}</span>
+                        <span class="postit-label">Origem:</span> <span class="postit-value endereco" title="${agendamento.enderecoOrigem}">${formatAddress(agendamento.enderecoOrigem, agendamento.id)}</span>
                     </div>
                 ` : ''}
                 ${agendamento.paradas && agendamento.paradas.length > 0 ? 
                     agendamento.paradas.map((parada, index) => `
                         <div class="postit-row">
                             <span class="icon"><i class="fas fa-route"></i></span>
-                            <span class="postit-label">Parada ${index + 1}:</span> <span class="postit-value endereco" title="${parada}">${parada}</span>
+                            <span class="postit-label">Parada ${index + 1}:</span> <span class="postit-value endereco" title="${parada}">${formatAddress(parada, agendamento.id)}</span>
                         </div>
                     `).join('') : 
                     // Fallback para compatibilidade com dados antigos
                     (agendamento.parada1 ? `
                         <div class="postit-row">
                             <span class="icon"><i class="fas fa-route"></i></span>
-                            <span class="postit-label">Parada 1:</span> <span class="postit-value endereco" title="${agendamento.parada1}">${agendamento.parada1}</span>
+                            <span class="postit-label">Parada 1:</span> <span class="postit-value endereco" title="${agendamento.parada1}">${formatAddress(agendamento.parada1, agendamento.id)}</span>
                         </div>
                     ` : '') +
                     (agendamento.parada2 ? `
                         <div class="postit-row">
                             <span class="icon"><i class="fas fa-route"></i></span>
-                            <span class="postit-label">Parada 2:</span> <span class="postit-value endereco" title="${agendamento.parada2}">${agendamento.parada2}</span>
+                            <span class="postit-label">Parada 2:</span> <span class="postit-value endereco" title="${agendamento.parada2}">${formatAddress(agendamento.parada2, agendamento.id)}</span>
                         </div>
                     ` : '')
                 }
                 ${agendamento.enderecoDestino ? `
                     <div class="postit-row">
                         <span class="icon"><i class="fas fa-flag-checkered"></i></span>
-                        <span class="postit-label">Destino:</span> <span class="postit-value endereco" title="${agendamento.enderecoDestino}">${agendamento.enderecoDestino}</span>
+                        <span class="postit-label">Destino:</span> <span class="postit-value endereco" title="${agendamento.enderecoDestino}">${formatAddress(agendamento.enderecoDestino, agendamento.id)}</span>
                     </div>
                 ` : ''}
                 ${observacoes}
@@ -1981,7 +2132,8 @@ function checkForgottenAgendamentos() {
                                 agendamento.nomeCliente, 
                                 agendamento.horario, 
                                 agendamento.cidade, 
-                                minutesLate
+                                minutesLate,
+                                agendamento.atendente
                             );
                              console.log('[DEBUG] Notificação de voz enviada com sucesso');
                          } else {
@@ -2010,15 +2162,54 @@ function openLocationModal(agendamentoId) {
     // Buscar o agendamento pelo ID
     const agendamento = agendamentos.find(a => a.id === agendamentoId);
     if (!agendamento) {
+        console.log('[DEBUG] Agendamento não encontrado para ID:', agendamentoId);
         showToast('Item não localizado. Verifique os dados ou contate o suporte.', 'error');
         return;
     }
 
+    console.log('[DEBUG] Agendamento encontrado:', agendamento);
+    console.log('[DEBUG] Endereço origem:', agendamento.enderecoOrigem);
+    console.log('[DEBUG] Endereço destino:', agendamento.enderecoDestino);
+
     // Verificar se os endereços estão presentes
     if (!agendamento.enderecoOrigem || !agendamento.enderecoDestino) {
+        console.log('[DEBUG] Endereços incompletos - origem:', !!agendamento.enderecoOrigem, 'destino:', !!agendamento.enderecoDestino);
         showToast('Dados de localização incompletos. Verifique os endereços.', 'error');
         return;
     }
+
+    // Verificar tipos de endereços com logs detalhados
+    const origemIsUrl = isGoogleMapsUrl(agendamento.enderecoOrigem);
+    const destinoIsUrl = isGoogleMapsUrl(agendamento.enderecoDestino);
+    const origemIsCoordinate = isCoordinates(agendamento.enderecoOrigem);
+    const destinoIsCoordinate = isCoordinates(agendamento.enderecoDestino);
+    
+    console.log('[DEBUG openLocationModal] Análise detalhada dos endereços:');
+    console.log('  - Origem:', agendamento.enderecoOrigem);
+    console.log('  - Origem é URL:', origemIsUrl);
+    console.log('  - Origem é coordenada:', origemIsCoordinate);
+    console.log('  - Destino:', agendamento.enderecoDestino);
+    console.log('  - Destino é URL:', destinoIsUrl);
+    console.log('  - Destino é coordenada:', destinoIsCoordinate);
+    
+    // Extrair coordenadas de URLs se necessário
+    let origemCoords = null;
+    let destinoCoords = null;
+    
+    if (origemIsUrl) {
+        origemCoords = extractCoordinatesFromUrl(agendamento.enderecoOrigem);
+        console.log('[DEBUG openLocationModal] Coordenadas extraídas da origem:', origemCoords);
+    }
+    
+    if (destinoIsUrl) {
+        destinoCoords = extractCoordinatesFromUrl(agendamento.enderecoDestino);
+        console.log('[DEBUG openLocationModal] Coordenadas extraídas do destino:', destinoCoords);
+    }
+    
+    // Agora TODAS as coordenadas e URLs serão processadas no modal
+    console.log('[DEBUG openLocationModal] Prosseguindo para abrir modal - processando todos os tipos de endereço');
+    
+    console.log('[DEBUG] Prosseguindo para abrir modal de localização');
 
     const modal = document.getElementById('locationModal');
     const citySpan = document.getElementById('currentCity');
@@ -2308,8 +2499,66 @@ async function initializeMapWithAddresses(enderecoOrigem, enderecoDestino, parad
 async function geocodeAddress(address) {
     const geocodeLoaderId = `geocode-${Date.now()}`;
     
+    console.log('[DEBUG geocodeAddress] Iniciando geocodificação para:', address);
+    
     try {
+        // Primeiro verificar se é uma URL do Google Maps
+        if (isGoogleMapsUrl(address)) {
+            console.log('[DEBUG geocodeAddress] Detectado como URL do Google Maps');
+            const extracted = extractCoordinatesFromUrl(address);
+            if (extracted) {
+                console.log('[DEBUG geocodeAddress] Coordenadas extraídas da URL:', extracted);
+                return [extracted.lat, extracted.lng];
+            } else {
+                console.log('[DEBUG geocodeAddress] URL não contém coordenadas, tentando geocodificação normal');
+                // Se não conseguir extrair coordenadas, tenta geocodificar a URL como endereço
+            }
+        }
+        
+        // Verificar se o endereço é uma coordenada
+        if (isCoordinates(address)) {
+            console.log('[DEBUG geocodeAddress] Endereço detectado como coordenada:', address);
+            
+            // Extrair coordenadas do texto
+            const text = address.trim();
+            let lat, lng;
+            
+            // Formato: -15.123456, -56.789012
+            if (/^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/.test(text)) {
+                const parts = text.split(',');
+                lat = parseFloat(parts[0].trim());
+                lng = parseFloat(parts[1].trim());
+            }
+            // Formato: (-15.123456, -56.789012)
+            else if (/^\(-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+\)$/.test(text)) {
+                const cleanText = text.replace(/[()]/g, '');
+                const parts = cleanText.split(',');
+                lat = parseFloat(parts[0].trim());
+                lng = parseFloat(parts[1].trim());
+            }
+            // Formato: lat: -15.123456, lng: -56.789012
+            else if (/^lat:\s*-?\d{1,3}\.\d+,\s*lng:\s*-?\d{1,3}\.\d+$/i.test(text)) {
+                const latMatch = text.match(/lat:\s*(-?\d{1,3}\.\d+)/i);
+                const lngMatch = text.match(/lng:\s*(-?\d{1,3}\.\d+)/i);
+                lat = parseFloat(latMatch[1]);
+                lng = parseFloat(lngMatch[1]);
+            }
+            // Formato: latitude: -15.123456, longitude: -56.789012
+            else if (/^latitude:\s*-?\d{1,3}\.\d+,\s*longitude:\s*-?\d{1,3}\.\d+$/i.test(text)) {
+                const latMatch = text.match(/latitude:\s*(-?\d{1,3}\.\d+)/i);
+                const lngMatch = text.match(/longitude:\s*(-?\d{1,3}\.\d+)/i);
+                lat = parseFloat(latMatch[1]);
+                lng = parseFloat(lngMatch[1]);
+            }
+            
+            if (lat !== undefined && lng !== undefined) {
+                console.log('[DEBUG geocodeAddress] Coordenadas parseadas:', { lat, lng });
+                return [lat, lng];
+            }
+        }
+        
         // Mostrar preloader para geocodificação
+        console.log('[DEBUG geocodeAddress] Iniciando geocodificação via API para:', address);
         if (window.GlobalPreloader) {
             window.GlobalPreloader.show(geocodeLoaderId, {
                 message: `Localizando: ${address.substring(0, 30)}...`,
@@ -2320,14 +2569,19 @@ async function geocodeAddress(address) {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`);
         const data = await response.json();
         
+        console.log('[DEBUG geocodeAddress] Resposta da API:', data);
+        
         // Ocultar preloader
         if (window.GlobalPreloader) {
             window.GlobalPreloader.hide(geocodeLoaderId);
         }
         
         if (data && data.length > 0) {
-            return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+            console.log('[DEBUG geocodeAddress] Coordenadas obtidas via API:', coords);
+            return coords;
         }
+        console.log('[DEBUG geocodeAddress] Nenhuma coordenada encontrada via API');
         return null;
     } catch (error) {
         console.error('Erro ao geocodificar endereço:', address, error);

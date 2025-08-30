@@ -111,22 +111,43 @@ class SearchSystem {
         const clienteElement = card.querySelector('.cliente-nome');
         const cliente = clienteElement ? clienteElement.textContent.toLowerCase() : '';
         
-        // Buscar pelo atendente na estrutura específica dos cards
+        // Buscar pelos dados nos postit-rows
         const atendenteRows = card.querySelectorAll('.postit-row');
         let atendente = '';
+        let telefone = '';
+        let enderecoOrigem = '';
+        let enderecoDestino = '';
+        let paradas = '';
         
         atendenteRows.forEach(row => {
             const label = row.querySelector('.postit-label');
-            if (label && label.textContent.includes('Atendente:')) {
-                const value = row.querySelector('.postit-value');
-                if (value) {
-                    atendente = value.textContent.toLowerCase();
+            const value = row.querySelector('.postit-value');
+            
+            if (label && value) {
+                const labelText = label.textContent.toLowerCase();
+                const valueText = value.textContent.toLowerCase();
+                
+                if (labelText.includes('atendente:')) {
+                    atendente = valueText;
+                } else if (labelText.includes('telefone:')) {
+                    telefone = valueText;
+                } else if (labelText.includes('origem:')) {
+                    enderecoOrigem = valueText;
+                } else if (labelText.includes('destino:')) {
+                    enderecoDestino = valueText;
+                } else if (labelText.includes('parada')) {
+                    paradas += ' ' + valueText;
                 }
             }
         });
 
-        // Busca integrada em cliente e atendente
-        return cliente.includes(searchTerm) || atendente.includes(searchTerm);
+        // Busca integrada em todos os campos
+        return cliente.includes(searchTerm) || 
+               atendente.includes(searchTerm) ||
+               telefone.includes(searchTerm) ||
+               enderecoOrigem.includes(searchTerm) ||
+               enderecoDestino.includes(searchTerm) ||
+               paradas.includes(searchTerm);
     }
 
 

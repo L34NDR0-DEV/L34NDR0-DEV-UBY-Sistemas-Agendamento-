@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, Notification, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Store = require('electron-store');
@@ -390,19 +390,29 @@ app.setAppUserModelId('com.uby.agendamentos');
 
 // Configurações de segurança adicionais
 app.on('web-contents-created', (event, contents) => {
-  // Desabilitar navegação para URLs externas
+  
+  // Configurar abertura de links externos
+  contents.setWindowOpenHandler(({ url }) => {
+    // Abrir URLs externas no navegador padrão
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
+  
+  // Interceptar cliques em links para abrir no navegador externo
   contents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
     
+    // Se for um link HTTP/HTTPS, abrir no navegador externo
+    if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+      event.preventDefault();
+      shell.openExternal(navigationUrl);
+    }
     // Permitir apenas navegação para arquivos locais
-    if (parsedUrl.protocol !== 'file:') {
+    else if (parsedUrl.protocol !== 'file:') {
       event.preventDefault();
     }
-  });
-  
-  // Desabilitar novas janelas
-  contents.setWindowOpenHandler(() => {
-    return { action: 'deny' };
   });
 });
 
@@ -876,10 +886,14 @@ function showNativeNotification(title, body, options = {}) {
   }
 
   try {
+    // Sanitizar strings para evitar problemas de codificação
+    const sanitizedTitle = Buffer.from(title, 'utf8').toString('utf8');
+    const sanitizedBody = Buffer.from(body, 'utf8').toString('utf8');
+    
     // Configurações otimizadas para Windows 11
     const notificationConfig = {
-      title: title,
-      body: body,
+      title: sanitizedTitle,
+      body: sanitizedBody,
       icon: path.join(__dirname, '..', 'assets', 'logo.ico'),
       sound: options.sound !== false, // Por padrão, reproduz som
       urgency: options.urgency || 'normal', // low, normal, critical
@@ -910,14 +924,36 @@ function showNativeNotification(title, body, options = {}) {
     });
 
     notification.on('failed', (error) => {
-      console.error('[NOTIFICATION] Falha ao exibir notificação:', error);
+      // Melhor tratamento do erro para evitar 'Event {}' ou '[object Object]'
+      let errorMessage = 'Erro desconhecido ao exibir notificação';
+      
+      if (error) {
+        if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (error.message) {
+          errorMessage = error.message;
+        } else if (error.code) {
+          errorMessage = `Código de erro: ${error.code}`;
+        } else {
+          try {
+            errorMessage = JSON.stringify(error, null, 2);
+          } catch (e) {
+            errorMessage = 'Erro não serializável';
+          }
+        }
+      }
+      
+      console.error('[NOTIFICATION] Falha ao exibir notificação:', errorMessage);
     });
 
     notification.show();
-    console.log(`[NOTIFICATION] Notificação nativa exibida: ${title}`);
+    console.log(`[NOTIFICATION] Notificação nativa exibida: ${sanitizedTitle}`);
     return true;
   } catch (error) {
-    console.error('[NOTIFICATION] Erro ao exibir notificação nativa:', error);
+    const errorMessage = error && error.message ? error.message : 
+                        error && error.toString ? error.toString() : 
+                        'Erro desconhecido';
+    console.error('[NOTIFICATION] Erro ao exibir notificação nativa:', errorMessage);
     return false;
   }
 }
