@@ -12,7 +12,7 @@ const store = new Store();
 
 // Modo desempenho (sem tocar na UI). Habilitar com PERFORMANCE_MODE=true
 const performanceMode = process.env.PERFORMANCE_MODE === 'true';
-console.log(`[CONFIG] Performance Mode: ${performanceMode ? 'ON' : 'OFF'}`);
+console.log(`[CONFIG] Modo de Performance: ${performanceMode ? 'LIGADO' : 'DESLIGADO'}`);
 
 // Conectando ao servidor WebSocket externo na porta 3000
 
@@ -379,10 +379,10 @@ async function createMainWindow() {
 // Aceleração por hardware configurável por variável de ambiente
 // Por padrão, mantém desabilitada como antes. Para habilitar, defina ENABLE_HW_ACCELERATION=true
 if (process.env.ENABLE_HW_ACCELERATION === 'true') {
-  console.log('[CONFIG] Hardware Acceleration: ENABLED');
+  console.log('[CONFIG] Aceleração de Hardware: HABILITADA');
 } else {
   app.disableHardwareAcceleration();
-  console.log('[CONFIG] Hardware Acceleration: DISABLED');
+  console.log('[CONFIG] Aceleração de Hardware: DESABILITADA');
 }
 
 // Configurar ícone da aplicação

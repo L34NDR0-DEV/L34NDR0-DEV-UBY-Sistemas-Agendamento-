@@ -88,24 +88,40 @@ class ReminderSystem {
      */
     checkAppointmentReminder(agendamento, currentTime) {
         try {
-            // Criar data/hora do agendamento
-            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
-            
-            let appointmentInBrasilia, currentTimeInBrasilia;
-            
-            if (window.timezoneManager && agendamento.cidade && 
-                window.timezoneManager.hasDifferentTimezone(agendamento.cidade)) {
-                // CORREÇÃO: Converter o horário do agendamento para Brasília para comparação correta
-                appointmentInBrasilia = window.timezoneManager.adjustDateTime(appointmentDateTime, agendamento.cidade, false);
-                currentTimeInBrasilia = currentTime; // Horário atual já está em Brasília
-            } else {
-                // Para outras cidades (horário de Brasília)
-                appointmentInBrasilia = appointmentDateTime;
-                currentTimeInBrasilia = currentTime;
+            // Para Aquidauana, usar relógio específico
+            if (agendamento.cidade && agendamento.cidade.toLowerCase() === 'aquidauana') {
+                const aquidauanaTime = window.timezoneManager.getAquidauanaCurrentTime();
+                const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
+                
+                const timeDiff = appointmentDateTime - aquidauanaTime;
+                const minutesUntil = Math.floor(timeDiff / (1000 * 60));
+                
+                console.log(`[ReminderSystem] Aquidauana - Agendamento ${agendamento.horario}, Horário atual: ${aquidauanaTime.toTimeString().slice(0, 8)}, ${minutesUntil} min restantes`);
+                
+                // Verificar se precisa de lembrete
+                if (minutesUntil > 0 && this.reminderTimes.includes(minutesUntil)) {
+                    const reminderKey = `${agendamento.id}_${minutesUntil}`;
+                    
+                    // Evitar notificações duplicadas
+                    if (!this.notifiedReminders.has(reminderKey)) {
+                        this.notifiedReminders.add(reminderKey);
+                        this.sendReminder(agendamento, minutesUntil);
+                        
+                        console.log(`[ReminderSystem] Lembrete enviado: ${agendamento.nomeCliente} em ${minutesUntil} minutos`);
+                    }
+                }
+                
+                // Limpar lembretes antigos (mais de 2 horas atrás)
+                if (minutesUntil < -120) {
+                    this.cleanupOldReminders(agendamento.id);
+                }
+                
+                return;
             }
             
-            // Calcular diferença em minutos
-            const timeDiff = appointmentInBrasilia - currentTimeInBrasilia;
+            // Para outras cidades (horário de Brasília) - lógica original
+            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
+            const timeDiff = appointmentDateTime - currentTime;
             const minutesUntil = Math.floor(timeDiff / (1000 * 60));
             
             // Verificar se precisa de lembrete
@@ -135,10 +151,11 @@ class ReminderSystem {
      * Envia lembrete de agendamento próximo
      */
     sendReminder(agendamento, minutesUntil) {
-        console.log(`[ReminderSystem] Enviando lembrete: ${agendamento.nomeCliente} em ${minutesUntil} minutos`);
-        
-        // Verificar se é agendamento de Aquidauana
         const isAquidauana = this.isAquidauanaAppointment(agendamento);
+        const timezoneInfo = window.timezoneManager ? window.timezoneManager.getTimezoneInfo(agendamento.cidade) : null;
+        
+        console.log(`[ReminderSystem] Enviando lembrete: ${agendamento.nomeCliente} em ${minutesUntil} minutos`);
+        console.log(`[ReminderSystem] Cidade: ${agendamento.cidade}, Fuso: ${timezoneInfo ? timezoneInfo.offset : 'Brasília'}, Horário: ${agendamento.horario}`);
         
         if (isAquidauana && window.voiceManagerAquidauana && window.voiceManagerAquidauana.isEnabled()) {
             // Usar sistema de voz especializado para Aquidauana
@@ -148,8 +165,8 @@ class ReminderSystem {
                 minutesUntil
             );
             
-            console.log(`[ReminderSystem] Alerta de voz AQUIDAUANA enviado para ${agendamento.nomeCliente}`);
-        } else if (window.voiceManager && window.voiceManager.isEnabled() && window.soundManager && window.soundManager.isEnabled()) {
+            console.log(`[ReminderSystem] ✓ Alerta de voz AQUIDAUANA enviado para ${agendamento.nomeCliente} (${agendamento.horario} horário local)`);
+        } else if (window.voiceManager && window.voiceManager.isEnabled()) {
             // Usar sistema de voz padrão para outras cidades
             window.voiceManager.speakAgendamentoProximo(
                 agendamento.nomeCliente,
@@ -158,9 +175,9 @@ class ReminderSystem {
                 minutesUntil
             );
             
-            console.log(`[ReminderSystem] Alerta de voz padrão enviado para ${agendamento.nomeCliente}`);
+            console.log(`[ReminderSystem] ✓ Alerta de voz padrão enviado para ${agendamento.nomeCliente} (${agendamento.cidade})`);
         } else {
-            console.warn('[ReminderSystem] Sistema de voz não disponível ou desabilitado');
+            console.warn('[ReminderSystem] ⚠️ Sistema de voz não disponível ou desabilitado');
         }
         
         // Tocar som de lembrete se disponível
@@ -291,27 +308,43 @@ class ReminderSystem {
      */
     checkAppointmentDelay(agendamento, currentTime) {
         try {
-            // Criar data/hora do agendamento
-            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
-            
-            let appointmentInBrasilia, currentTimeInBrasilia;
-            
-            if (window.timezoneManager && agendamento.cidade && 
-                window.timezoneManager.hasDifferentTimezone(agendamento.cidade)) {
-                // CORREÇÃO: Converter o horário do agendamento para Brasília para comparação correta
-                appointmentInBrasilia = window.timezoneManager.adjustDateTime(appointmentDateTime, agendamento.cidade, false);
-                currentTimeInBrasilia = currentTime; // Horário atual já está em Brasília
+            // Para Aquidauana, usar relógio específico
+            if (agendamento.cidade && agendamento.cidade.toLowerCase() === 'aquidauana') {
+                const result = window.timezoneManager.isAppointmentLateInAquidauana(
+                    agendamento.horario, 
+                    agendamento.data
+                );
                 
-                console.log(`[ReminderSystem] Agendamento ${agendamento.cidade}: ${agendamento.horario} (local) -> ${appointmentInBrasilia.toTimeString().slice(0, 5)} (Brasília)`);
-            } else {
-                // Para outras cidades, usar horário de Brasília
-                appointmentInBrasilia = appointmentDateTime;
-                currentTimeInBrasilia = currentTime;
+                console.log(`[ReminderSystem] Aquidauana - Agendamento ${agendamento.horario}, Horário atual: ${result.currentTime.toTimeString().slice(0, 8)}, ${result.minutesLate} min de atraso`);
+                
+                // Só processar se estiver realmente atrasado
+                if (result.isLate && result.minutesLate > 0) {
+                    // Avisar a cada 5 minutos para atrasos até 30 minutos, depois a cada 15 minutos
+                    const shouldNotify = (result.minutesLate <= 30 && result.minutesLate % 5 === 0) || 
+                                       (result.minutesLate > 30 && result.minutesLate % 15 === 0);
+                    
+                    if (shouldNotify) {
+                        const delayKey = `${agendamento.id}_delay_${result.minutesLate}`;
+                        
+                        // Evitar notificações duplicadas
+                        if (!this.notifiedReminders.has(delayKey)) {
+                            this.notifiedReminders.add(delayKey);
+                            this.sendDelayAlert(agendamento, result.minutesLate);
+                            
+                            console.log(`[ReminderSystem] Alerta de atraso enviado: ${agendamento.nomeCliente} - ${result.minutesLate} minutos`);
+                        }
+                    }
+                }
+                
+                return;
             }
             
-            // Calcular atraso em minutos
-            const timeDiff = currentTimeInBrasilia - appointmentInBrasilia;
+            // Para outras cidades (horário de Brasília) - lógica original
+            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
+            const timeDiff = currentTime - appointmentDateTime;
             const minutesLate = Math.floor(timeDiff / (1000 * 60));
+            
+            console.log(`[ReminderSystem] Verificação de atraso - ${agendamento.cidade}: ${agendamento.horario} (Brasília)`);
             
             console.log(`[ReminderSystem] Verificação de atraso - ${agendamento.nomeCliente}: ${minutesLate} minutos`);
             
@@ -337,10 +370,11 @@ class ReminderSystem {
      * Envia alerta de agendamento atrasado
      */
     sendDelayAlert(agendamento, minutesLate) {
-        console.log(`[ReminderSystem] Enviando alerta de atraso: ${agendamento.nomeCliente} - ${minutesLate} minutos`);
-        
-        // Verificar se é agendamento de Aquidauana
         const isAquidauana = this.isAquidaunaAppointment(agendamento);
+        const timezoneInfo = window.timezoneManager ? window.timezoneManager.getTimezoneInfo(agendamento.cidade) : null;
+        
+        console.log(`[ReminderSystem] 🚨 Enviando alerta de atraso: ${agendamento.nomeCliente} - ${minutesLate} minutos`);
+        console.log(`[ReminderSystem] Cidade: ${agendamento.cidade}, Fuso: ${timezoneInfo ? timezoneInfo.offset : 'Brasília'}, Horário: ${agendamento.horario}`);
         
         if (isAquidauana && window.voiceManagerAquidauana && window.voiceManagerAquidauana.isEnabled()) {
             // Usar sistema de voz especializado para Aquidauana
@@ -350,8 +384,8 @@ class ReminderSystem {
                 minutesLate
             );
             
-            console.log(`[ReminderSystem] Alerta de ATRASO AQUIDAUANA enviado para ${agendamento.nomeCliente}`);
-        } else if (window.voiceManager && window.voiceManager.isEnabled() && window.soundManager && window.soundManager.isEnabled()) {
+            console.log(`[ReminderSystem] ✓ Alerta de ATRASO AQUIDAUANA enviado para ${agendamento.nomeCliente} (${agendamento.horario} horário local, ${minutesLate} min atraso)`);
+        } else if (window.voiceManager && window.voiceManager.isEnabled()) {
             // Usar sistema de voz padrão para outras cidades
             window.voiceManager.speakAgendamentoAtrasado(
                 agendamento.nomeCliente,
@@ -360,7 +394,9 @@ class ReminderSystem {
                 minutesLate
             );
             
-            console.log(`[ReminderSystem] Alerta de atraso padrão enviado para ${agendamento.nomeCliente}`);
+            console.log(`[ReminderSystem] ✓ Alerta de atraso padrão enviado para ${agendamento.nomeCliente} (${agendamento.cidade}, ${minutesLate} min atraso)`);
+        } else {
+            console.warn('[ReminderSystem] ⚠️ Sistema de voz não disponível para alerta de atraso');
         }
         
         // Tocar som de alerta se disponível

@@ -267,9 +267,16 @@ class VoiceManagerAquidauana {
     
     /**
      * Formatar horário para fala considerando fuso horário de Aquidauana
+     * @param {string} horario - Horário em formato HH:MM
+     * @param {boolean} isLocalTime - Se o horário já está no fuso local de Aquidauana
      */
-    formatTimeForSpeech(horario) {
+    formatTimeForSpeech(horario, isLocalTime = false) {
         if (!window.timezoneManager) {
+            return horario;
+        }
+        
+        if (isLocalTime) {
+            // Horário já está no fuso local de Aquidauana
             return horario;
         }
         
@@ -277,20 +284,46 @@ class VoiceManagerAquidauana {
         const horarioLocal = window.timezoneManager.adjustTime(horario, 'Aquidauana', true);
         return horarioLocal;
     }
+    
+    /**
+     * Formatar horário para fala com informação de fuso horário
+     */
+    formatTimeWithTimezoneForSpeech(horario) {
+        const horarioLocal = this.formatTimeForSpeech(horario);
+        const [hours, minutes] = horarioLocal.split(':');
+        
+        // Converter para formato de fala mais natural
+        let horaFala = parseInt(hours);
+        if (horaFala === 0) {
+            return `meia-noite e ${minutes} minutos, horário de Aquidauana`;
+        } else if (horaFala === 12) {
+            return `meio-dia e ${minutes} minutos, horário de Aquidauana`;
+        } else if (horaFala > 12) {
+            return `${horaFala - 12} horas e ${minutes} minutos da tarde, horário de Aquidauana`;
+        } else {
+            return `${horaFala} horas e ${minutes} minutos da manhã, horário de Aquidauana`;
+        }
+    }
 
     /**
      * Métodos específicos para notificações de Aquidauana
      */
     speakAgendamentoAquidauanaProximo(nomeCliente, horario, minutosRestantes) {
-        const horarioLocal = this.formatTimeForSpeech(horario);
+        // Determinar se o horário já está no fuso local ou precisa ser convertido
+        const isStoredInBrasilia = true; // Agendamentos são armazenados em horário de Brasília
+        const horarioLocal = this.formatTimeForSpeech(horario, !isStoredInBrasilia);
+        const horarioFormatado = this.formatTimeWithTimezoneForSpeech(horario);
+        
         let text;
         
         if (minutosRestantes <= 0) {
-            text = `Atenção Aquidauana! O agendamento de ${nomeCliente} às ${horarioLocal} está começando agora`;
+            text = `Atenção Aquidauana! O agendamento de ${nomeCliente} às ${horarioFormatado} está começando agora!`;
         } else if (minutosRestantes <= 5) {
-            text = `Aquidauana, atenção! Agendamento de ${nomeCliente} às ${horarioLocal} em ${minutosRestantes} minutos`;
+            text = `Aquidauana, atenção urgente! Agendamento de ${nomeCliente} às ${horarioFormatado} em apenas ${minutosRestantes} minutos!`;
+        } else if (minutosRestantes <= 15) {
+            text = `Aquidauana, atenção! Agendamento de ${nomeCliente} às ${horarioFormatado} em ${minutosRestantes} minutos`;
         } else {
-            text = `Aquidauana, próximo agendamento: ${nomeCliente} às ${horarioLocal} em ${minutosRestantes} minutos`;
+            text = `Aquidauana, próximo agendamento: ${nomeCliente} às ${horarioFormatado} em ${minutosRestantes} minutos`;
         }
         
         this.addToQueue(text, { 
@@ -298,12 +331,27 @@ class VoiceManagerAquidauana {
             type: 'proximo',
             volume: this.volume + 0.1 
         });
+        
+        console.log(`[VoiceManagerAquidauana] Lembrete enviado: ${nomeCliente} em ${minutosRestantes} min - Horário local: ${horarioLocal}`);
     }
     
     speakAgendamentoAquidauanaAtrasado(nomeCliente, horario, minutosAtraso) {
-        const horarioLocal = this.formatTimeForSpeech(horario);
+        const isStoredInBrasilia = true;
+        const horarioLocal = this.formatTimeForSpeech(horario, !isStoredInBrasilia);
+        const horarioFormatado = this.formatTimeWithTimezoneForSpeech(horario);
         const tempoFormatado = this.formatMinutesForSpeech(minutosAtraso);
-        const text = `Alerta Aquidauana! Agendamento de ${nomeCliente} às ${horarioLocal} está atrasado em ${tempoFormatado}. Favor verificar imediatamente!`;
+        
+        let text;
+        
+        if (minutosAtraso <= 5) {
+            text = `Aquidauana, agendamento de ${nomeCliente} às ${horarioFormatado} está ${tempoFormatado} atrasado`;
+        } else if (minutosAtraso <= 15) {
+            text = `Aquidauana, atenção! Agendamento de ${nomeCliente} às ${horarioFormatado} está ${tempoFormatado} atrasado`;
+        } else if (minutosAtraso <= 30) {
+            text = `Aquidauana, alerta importante! Agendamento de ${nomeCliente} às ${horarioFormatado} está muito atrasado, ${tempoFormatado}!`;
+        } else {
+            text = `Alerta Aquidauana! Agendamento de ${nomeCliente} às ${horarioFormatado} está atrasado em ${tempoFormatado}. Favor verificar imediatamente!`;
+        }
         
         this.addToQueue(text, { 
             priority: 3, // Prioridade máxima
@@ -317,16 +365,54 @@ class VoiceManagerAquidauana {
             horario: horarioLocal, // Usar horário local na notificação também
             minutosAtraso: minutosAtraso
         });
+        
+        console.log(`[VoiceManagerAquidauana] Alerta de atraso: ${nomeCliente} - ${minutosAtraso} min - Horário local: ${horarioLocal}`);
     }
     
-    speakAgendamentoAquidauanaCriado(nomeCliente, horario) {
-        const horarioLocal = this.formatTimeForSpeech(horario);
-        const text = `Aquidauana, novo agendamento confirmado: ${nomeCliente} às ${horarioLocal}`;
+    speakAgendamentoAquidauanaCriado(nomeCliente, horario, data) {
+        const isStoredInBrasilia = true;
+        const horarioLocal = this.formatTimeForSpeech(horario, !isStoredInBrasilia);
+        const horarioFormatado = this.formatTimeWithTimezoneForSpeech(horario);
+        
+        // Formatar data para fala
+        const dataFormatada = this.formatDateForSpeech(data);
+        
+        const text = `Aquidauana, novo agendamento criado com sucesso! Cliente ${nomeCliente} agendado para ${horarioFormatado} ${dataFormatada}. Confirmado no horário local de Aquidauana!`;
         
         this.addToQueue(text, { 
             priority: 1, 
-            type: 'criado' 
+            type: 'criado',
+            volume: this.volume 
         });
+        
+        console.log(`[VoiceManagerAquidauana] Agendamento criado: ${nomeCliente} - ${dataFormatada} ${horarioLocal}`);
+    }
+    
+    /**
+     * Formatar data para fala
+     */
+    formatDateForSpeech(data) {
+        if (!data) return 'hoje';
+        
+        const hoje = new Date();
+        const dataAgendamento = new Date(data);
+        
+        // Verificar se é hoje
+        if (dataAgendamento.toDateString() === hoje.toDateString()) {
+            return 'hoje';
+        }
+        
+        // Verificar se é amanhã
+        const amanha = new Date(hoje);
+        amanha.setDate(hoje.getDate() + 1);
+        if (dataAgendamento.toDateString() === amanha.toDateString()) {
+            return 'amanhã';
+        }
+        
+        // Formato padrão
+        const dia = dataAgendamento.getDate();
+        const mes = dataAgendamento.getMonth() + 1;
+        return `do dia ${dia} do ${mes}`;
     }
     
     speakAgendamentoAquidauanaConcluido(nomeCliente) {

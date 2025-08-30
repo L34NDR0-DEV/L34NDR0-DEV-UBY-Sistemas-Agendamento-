@@ -1697,19 +1697,66 @@ input:checked + .toggle-slider:before {
 
 .timezone-info {
     margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(255, 107, 0, 0.1);
-    border: 1px solid rgba(255, 107, 0, 0.2);
-    border-radius: 6px;
-    font-size: 12px;
-    color: #FF6B00;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.12), rgba(255, 107, 0, 0.08));
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #E55A00;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(255, 107, 0, 0.1);
+    animation: timezone-pulse 2s ease-in-out;
 }
 
 .timezone-info i {
-    font-size: 14px;
+    font-size: 15px;
+    color: #FF6B00;
+    animation: timezone-icon-glow 2s ease-in-out infinite;
+}
+
+@keyframes timezone-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+@keyframes timezone-icon-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Estilo especial para Aquidauana */
+.timezone-info.aquidauana {
+    background: linear-gradient(135deg, rgba(0, 150, 255, 0.12), rgba(0, 150, 255, 0.08));
+    border-color: rgba(0, 150, 255, 0.3);
+    color: #0066CC;
+    box-shadow: 0 2px 6px rgba(0, 150, 255, 0.15);
+}
+
+.timezone-info.aquidauana i {
+    color: #0096FF;
+}
+
+/* Tema escuro */
+[data-theme="dark"] .timezone-info {
+    background: linear-gradient(135deg, rgba(255, 107, 0, 0.2), rgba(255, 107, 0, 0.15));
+    border-color: rgba(255, 107, 0, 0.4);
+    color: #FFB366;
+    box-shadow: 0 2px 4px rgba(255, 107, 0, 0.2);
+}
+
+[data-theme="dark"] .timezone-info.aquidauana {
+    background: linear-gradient(135deg, rgba(0, 150, 255, 0.2), rgba(0, 150, 255, 0.15));
+    border-color: rgba(0, 150, 255, 0.4);
+    color: #66B3FF;
+    box-shadow: 0 2px 6px rgba(0, 150, 255, 0.25);
+}
+
+[data-theme="dark"] .timezone-info.aquidauana i {
+    color: #33A3FF;
 }
 
 .create-btn {

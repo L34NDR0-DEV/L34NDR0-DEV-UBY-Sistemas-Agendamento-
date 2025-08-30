@@ -1912,27 +1912,49 @@ function checkForgottenAgendamentos() {
             agendamento.status !== 'Concluído' && 
             agendamento.status !== 'Cancelado') {
             
-            // Ajustar comparação para fuso horário da cidade
-            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
-            
-            let appointmentInBrasilia, currentTimeInBrasilia;
-            
-            if (window.timezoneManager && agendamento.cidade && window.timezoneManager.hasDifferentTimezone(agendamento.cidade)) {
-                // CORREÇÃO: Converter o horário do agendamento para Brasília para comparação correta
-                appointmentInBrasilia = window.timezoneManager.adjustDateTime(appointmentDateTime, agendamento.cidade, false);
-                currentTimeInBrasilia = now; // Horário atual já está em Brasília
-            } else {
-                // Para outras cidades, usar horário de Brasília
-                appointmentInBrasilia = appointmentDateTime;
-                currentTimeInBrasilia = now;
+            // Para Aquidauana, usar relógio específico
+            if (agendamento.cidade && agendamento.cidade.toLowerCase() === 'aquidauana') {
+                const result = window.timezoneManager.isAppointmentLateInAquidauana(
+                    agendamento.horario, 
+                    agendamento.data
+                );
+                
+                console.log(`[DEBUG] Aquidauana - Agendamento ${agendamento.horario}, Horário atual: ${result.currentTime.toTimeString().slice(0, 8)}, ${result.minutesLate} min de atraso`);
+                
+                // Só processar se estiver realmente atrasado
+                if (result.isLate && result.minutesLate > 0) {
+                    console.log('[DEBUG] Agendamento atrasado encontrado (Aquidauana):', {
+                        cliente: agendamento.nomeCliente,
+                        cidade: agendamento.cidade,
+                        horario: agendamento.horario,
+                        minutosAtraso: result.minutesLate,
+                        status: agendamento.status,
+                        horarioAtualAquidauana: result.currentTime.toTimeString().slice(0, 8)
+                    });
+                
+                    // Avisar a cada 5 minutos para atrasos até 30 minutos, depois a cada 15 minutos
+                    const shouldNotify = (result.minutesLate <= 30 && result.minutesLate % 5 === 0) || 
+                                       (result.minutesLate > 30 && result.minutesLate % 15 === 0);
+                    
+                    if (shouldNotify) {
+                        // Usar sistema de lembretes para notificação
+                        if (window.reminderSystem) {
+                            window.reminderSystem.sendDelayAlert(agendamento, result.minutesLate);
+                        }
+                    }
+                }
+                
+                return; // Sair da função para esta iteração
             }
             
-            const timeDiff = currentTimeInBrasilia - appointmentInBrasilia;
+            // Para outras cidades (horário de Brasília) - lógica original
+            const appointmentDateTime = new Date(`${agendamento.data}T${agendamento.horario}:00`);
+            const timeDiff = now - appointmentDateTime;
             const minutesLate = Math.floor(timeDiff / (1000 * 60));
             
             // Só processar se estiver realmente atrasado
             if (minutesLate > 0) {
-                console.log('[DEBUG] Agendamento atrasado encontrado:', {
+                console.log('[DEBUG] Agendamento atrasado encontrado (Brasília):', {
                     cliente: agendamento.nomeCliente,
                     cidade: agendamento.cidade,
                     horario: agendamento.horario,
@@ -3954,9 +3976,22 @@ function handleCidadeChange() {
     
     if (window.timezoneManager && window.timezoneManager.hasDifferentTimezone(cidadeSelecionada)) {
         const timezoneConfig = window.timezoneManager.getTimezoneInfo(cidadeSelecionada);
-        timezoneText.textContent = `Horário local de ${cidadeSelecionada}: ${timezoneConfig.offsetText} em relação a Brasília`;
+        
+        // Aplicar classe especial para Aquidauana
+        timezoneInfo.classList.remove('aquidauana');
+        if (cidadeSelecionada.toLowerCase().includes('aquidauana')) {
+            timezoneInfo.classList.add('aquidauana');
+            timezoneText.textContent = `⏰ Horário de Aquidauana: ${timezoneConfig.offsetText} em relação a Brasília`;
+        } else {
+            timezoneText.textContent = `⏰ Horário local de ${cidadeSelecionada}: ${timezoneConfig.offsetText} em relação a Brasília`;
+        }
+        
         timezoneInfo.style.display = 'flex';
+        
+        // Log para debug
+        console.log(`[TimezoneUI] Cidade selecionada: ${cidadeSelecionada}, Fuso: ${timezoneConfig.offsetText}`);
     } else {
         timezoneInfo.style.display = 'none';
+        timezoneInfo.classList.remove('aquidauana');
     }
 }

@@ -546,8 +546,324 @@ class SystemHelpers {
     }
 }
 
+// ===== TIMEZONE MANAGER =====
+
+class TimezoneManager {
+    constructor() {
+        this.timezones = {
+            'Aquidauana': {
+                offset: -4, // UTC-4 (1 hora a menos que Brasília)
+                offsetText: '-1 hora',
+                name: 'Aquidauana/MS'
+            },
+            'Campo Grande': {
+                offset: -4, // UTC-4 (mesmo fuso que Aquidauana)
+                offsetText: '-1 hora',
+                name: 'Campo Grande/MS'
+            },
+            // Brasília e outras cidades do Brasil (UTC-3)
+            'Brasília': {
+                offset: -3,
+                offsetText: 'Horário de Brasília',
+                name: 'Brasília/DF'
+            }
+        };
+        
+        // Cidades que seguem horário de Brasília (UTC-3)
+        this.brasiliaTimezone = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Salvador', 'Recife', 'Fortaleza', 'Goiânia', 'Curitiba', 'Porto Alegre', 'Florianópolis'];
+        
+        console.log('[TimezoneManager] Sistema de fuso horário inicializado');
+    }
+
+    /**
+     * Verifica se uma cidade tem fuso horário diferente de Brasília
+     */
+    hasDifferentTimezone(cidade) {
+        if (!cidade) return false;
+        
+        const cidadeNormalizada = cidade.trim();
+        
+        // Verificar se está na lista de timezones específicos
+        if (this.timezones[cidadeNormalizada]) {
+            return this.timezones[cidadeNormalizada].offset !== -3;
+        }
+        
+        // Verificar se é uma cidade de Mato Grosso do Sul (mesmo fuso que Aquidauana)
+        const cidadeLower = cidadeNormalizada.toLowerCase();
+        if (cidadeLower.includes('ms') || cidadeLower.includes('mato grosso do sul')) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Obtém informações do fuso horário de uma cidade
+     */
+    getTimezoneInfo(cidade) {
+        if (!cidade) return null;
+        
+        const cidadeNormalizada = cidade.trim();
+        
+        // Verificar se está na lista de timezones específicos
+        if (this.timezones[cidadeNormalizada]) {
+            return this.timezones[cidadeNormalizada];
+        }
+        
+        // Verificar se é uma cidade de MS
+        const cidadeLower = cidadeNormalizada.toLowerCase();
+        if (cidadeLower.includes('ms') || cidadeLower.includes('mato grosso do sul')) {
+            return {
+                offset: -4,
+                offsetText: '-1 hora',
+                name: `${cidadeNormalizada}/MS`
+            };
+        }
+        
+        // Padrão: horário de Brasília
+        return {
+            offset: -3,
+            offsetText: 'Horário de Brasília',
+            name: cidadeNormalizada
+        };
+    }
+
+    /**
+     * Ajusta um horário entre fusos horários
+     * @param {string} horario - Horário no formato HH:MM
+     * @param {string} cidade - Nome da cidade
+     * @param {boolean} toLocal - true: de Brasília para local, false: de local para Brasília
+     */
+    adjustTime(horario, cidade, toLocal = true) {
+        if (!horario || !cidade) return horario;
+        
+        const timezoneInfo = this.getTimezoneInfo(cidade);
+        if (!timezoneInfo || timezoneInfo.offset === -3) {
+            return horario; // Mesmo fuso que Brasília
+        }
+        
+        try {
+            const [hours, minutes] = horario.split(':').map(Number);
+            let adjustedHours = hours;
+            
+            if (toLocal) {
+                // De Brasília para horário local (Aquidauana = Brasília - 1 hora)
+                adjustedHours = hours - 1;
+            } else {
+                // De horário local para Brasília (Brasília = Aquidauana + 1 hora)
+                adjustedHours = hours + 1;
+            }
+            
+            // Ajustar para 24 horas
+            if (adjustedHours < 0) adjustedHours += 24;
+            if (adjustedHours >= 24) adjustedHours -= 24;
+            
+            return `${String(adjustedHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        } catch (error) {
+            console.error('[TimezoneManager] Erro ao ajustar horário:', error);
+            return horario;
+        }
+    }
+
+    /**
+     * Ajusta um objeto DateTime entre fusos horários
+     * @param {Date} dateTime - Objeto Date
+     * @param {string} cidade - Nome da cidade
+     * @param {boolean} toLocal - true: de Brasília para local, false: de local para Brasília
+     */
+    adjustDateTime(dateTime, cidade, toLocal = true) {
+        if (!dateTime || !cidade) return dateTime;
+        
+        const timezoneInfo = this.getTimezoneInfo(cidade);
+        if (!timezoneInfo || timezoneInfo.offset === -3) {
+            return dateTime; // Mesmo fuso que Brasília
+        }
+        
+        try {
+            const adjustedDateTime = new Date(dateTime);
+            
+            if (toLocal) {
+                // De Brasília para horário local (Aquidauana = Brasília - 1 hora)
+                adjustedDateTime.setHours(adjustedDateTime.getHours() - 1);
+            } else {
+                // De horário local para Brasília (Brasília = Aquidauana + 1 hora)
+                adjustedDateTime.setHours(adjustedDateTime.getHours() + 1);
+            }
+            
+            return adjustedDateTime;
+        } catch (error) {
+            console.error('[TimezoneManager] Erro ao ajustar DateTime:', error);
+            return dateTime;
+        }
+    }
+
+    /**
+     * Formata um horário com informação de fuso horário
+     * @param {string} horario - Horário no formato HH:MM
+     * @param {string} cidade - Nome da cidade
+     */
+    formatTimeWithTimezone(horario, cidade) {
+        if (!horario || !cidade) return horario;
+        
+        if (this.hasDifferentTimezone(cidade)) {
+            const horarioLocal = this.adjustTime(horario, cidade, true);
+            return `${horarioLocal} (${cidade})`;
+        }
+        
+        return horario;
+    }
+
+    /**
+     * Obtém o horário atual em uma cidade específica
+     * @param {string} cidade - Nome da cidade
+     */
+    getCurrentTimeInCity(cidade) {
+        const now = new Date();
+        
+        if (!cidade || !this.hasDifferentTimezone(cidade)) {
+            // Horário de Brasília
+            return now.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'America/Sao_Paulo'
+            });
+        }
+        
+        // Ajustar para o fuso da cidade
+        const adjustedTime = this.adjustDateTime(now, cidade, true);
+        return adjustedTime.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    /**
+     * Obtém o horário atual na cidade especificada como objeto Date
+     * @param {string} cidade - Nome da cidade
+     * @returns {Date} - Horário atual na cidade
+     */
+    getCurrentDateTimeInCity(cidade) {
+        if (!cidade) return new Date();
+        
+        const timezoneInfo = this.getTimezoneInfo(cidade);
+        if (!timezoneInfo || timezoneInfo.offset === -3) {
+            return new Date(); // Horário de Brasília
+        }
+        
+        // Para outras cidades, ajustar o horário
+        const now = new Date();
+        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const cityTime = new Date(utc + (timezoneInfo.offset * 3600000));
+        
+        return cityTime;
+    }
+
+    /**
+     * Relógio específico para Aquidauana - funciona independentemente
+     */
+    getAquidauanaCurrentTime() {
+        const now = new Date();
+        // Aquidauana está em UTC-4, Brasília em UTC-3
+        // Aquidauana está 1 hora atrás de Brasília
+        const aquidauanaTime = new Date(now.getTime() - (1 * 60 * 60 * 1000));
+        return aquidauanaTime;
+    }
+    
+    /**
+     * Verificar se agendamento está atrasado em Aquidauana
+     */
+    isAppointmentLateInAquidauana(appointmentTime, appointmentDate) {
+        const aquidauanaCurrentTime = this.getAquidauanaCurrentTime();
+        const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}:00`);
+        
+        const timeDiff = aquidauanaCurrentTime - appointmentDateTime;
+        const minutesLate = Math.floor(timeDiff / (1000 * 60));
+        
+        return {
+            isLate: minutesLate > 0,
+            minutesLate: Math.max(0, minutesLate),
+            currentTime: aquidauanaCurrentTime,
+            appointmentDateTime: appointmentDateTime
+        };
+    }
+    
+    /**
+     * Compara horários no mesmo fuso horário local (sem conversão para Brasília)
+     * @param {string} appointmentTime - Horário do agendamento (HH:MM)
+     * @param {string} appointmentDate - Data do agendamento (YYYY-MM-DD)
+     * @param {string} cidade - Cidade do agendamento
+     * @returns {Object} - Resultado da comparação com horário local
+     */
+    compareWithLocalTime(appointmentTime, appointmentDate, cidade) {
+        try {
+            // Se for Aquidauana, usar relógio específico
+            if (cidade && cidade.toLowerCase() === 'aquidauana') {
+                return this.isAppointmentLateInAquidauana(appointmentTime, appointmentDate);
+            }
+            
+            // Para outras cidades, usar lógica original
+            const now = new Date();
+            const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}:00`);
+            
+            const timeDiff = now - appointmentDateTime;
+            const minutesLate = Math.floor(timeDiff / (1000 * 60));
+            
+            return {
+                isLate: minutesLate > 0,
+                minutesLate: Math.max(0, minutesLate),
+                currentTimeInCity: now,
+                appointmentDateTime: appointmentDateTime
+            };
+        } catch (error) {
+            console.error('[TimezoneManager] Erro na comparação local:', error);
+            return {
+                minutesUntil: 0,
+                minutesLate: 0,
+                isLate: false,
+                appointmentDateTime: null,
+                currentLocalTime: new Date()
+            };
+        }
+    }
+
+    /**
+     * Verifica se um agendamento está atrasado considerando fuso horário
+     * @param {string} agendamentoHorario - Horário do agendamento
+     * @param {string} agendamentoData - Data do agendamento
+     * @param {string} cidade - Cidade do agendamento
+     * @param {Date} currentTime - Horário atual (em Brasília)
+     */
+    isAppointmentLate(agendamentoHorario, agendamentoData, cidade, currentTime = new Date()) {
+        try {
+            const appointmentDateTime = new Date(`${agendamentoData}T${agendamentoHorario}:00`);
+            
+            let appointmentInBrasilia;
+            
+            if (this.hasDifferentTimezone(cidade)) {
+                // Converter horário do agendamento (local) para Brasília
+                appointmentInBrasilia = this.adjustDateTime(appointmentDateTime, cidade, false);
+            } else {
+                appointmentInBrasilia = appointmentDateTime;
+            }
+            
+            const timeDiff = currentTime - appointmentInBrasilia;
+            const minutesLate = Math.floor(timeDiff / (1000 * 60));
+            
+            return {
+                isLate: minutesLate > 0,
+                minutesLate: Math.max(0, minutesLate),
+                appointmentInBrasilia: appointmentInBrasilia
+            };
+        } catch (error) {
+            console.error('[TimezoneManager] Erro ao verificar atraso:', error);
+            return { isLate: false, minutesLate: 0, appointmentInBrasilia: null };
+        }
+    }
+}
+
 // Instância global
 const systemHelpers = new SystemHelpers();
+const timezoneManager = new TimezoneManager();
 
 // Compatibilidade com browser
 if (typeof window !== 'undefined') {
@@ -557,6 +873,7 @@ if (typeof window !== 'undefined') {
     window.utilityFunctions = systemHelpers.utils;
     window.eventEmitter = systemHelpers.events;
     window.storageManager = systemHelpers.storage;
+    window.timezoneManager = timezoneManager;
 }
 
 // Compatibilidade com Node.js
@@ -568,11 +885,14 @@ if (typeof module !== 'undefined' && module.exports) {
         UtilityFunctions,
         EventEmitter,
         StorageManager,
-        systemHelpers
+        TimezoneManager,
+        systemHelpers,
+        timezoneManager
     };
 }
 
 // Inicialização automática
 if (typeof document !== 'undefined') {
     systemHelpers.logger.info('System Helpers inicializado');
+    console.log('[TimezoneManager] Sistema de fuso horário carregado e disponível globalmente');
 }
