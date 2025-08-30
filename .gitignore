@@ -10,7 +10,15 @@ NUL
 # Build outputs
 build/
 out/
+dist/
 UBY-App-Cliente/dist/
+*.exe
+*.msi
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.AppImage
 
 # Database files
 data/app.db
