@@ -357,6 +357,7 @@ function setupEventListeners() {
     const statusBtn = document.getElementById('statusBtn');
     const themeBtn = document.getElementById('themeBtn');
     const notificationBtn = document.getElementById('notificationBtn');
+    const updateBtn = document.getElementById('updateBtn');
     
     if (statusBtn) {
         statusBtn.addEventListener('click', syncData);
@@ -364,6 +365,10 @@ function setupEventListeners() {
     
     if (themeBtn) {
         themeBtn.addEventListener('click', toggleTheme);
+    }
+    
+    if (updateBtn) {
+        updateBtn.addEventListener('click', handleUpdateClick);
     }
     
     // Event listener para mudança de cidade (fuso horário)
@@ -4246,6 +4251,44 @@ function handleCidadeChange() {
         console.log(`[TimezoneUI] Cidade selecionada: ${cidadeSelecionada}, Fuso: ${timezoneConfig.offsetText}`);
     } else {
         timezoneInfo.style.display = 'none';
-        timezoneInfo.classList.remove('aquidauana');
     }
 }
+
+// Funções do sistema de atualização
+function handleUpdateClick() {
+    if (window.updateSystem) {
+        window.updateSystem.showUpdateModal();
+    } else {
+        safeShowToast('Sistema de atualização não disponível', 'error');
+    }
+}
+
+function showUpdateButton() {
+    const updateBtn = document.getElementById('updateBtn');
+    const updateDot = document.getElementById('updateNotificationDot');
+    
+    if (updateBtn) {
+        updateBtn.style.display = 'flex';
+    }
+    
+    if (updateDot) {
+        updateDot.classList.add('show');
+    }
+}
+
+function hideUpdateButton() {
+    const updateBtn = document.getElementById('updateBtn');
+    const updateDot = document.getElementById('updateNotificationDot');
+    
+    if (updateBtn) {
+        updateBtn.style.display = 'none';
+    }
+    
+    if (updateDot) {
+        updateDot.classList.remove('show');
+    }
+}
+
+// Tornar funções globais para uso pelo sistema de atualização
+window.showUpdateButton = showUpdateButton;
+window.hideUpdateButton = hideUpdateButton;

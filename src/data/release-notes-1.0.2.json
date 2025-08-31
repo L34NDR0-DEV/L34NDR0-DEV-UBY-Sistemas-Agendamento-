@@ -1,0 +1,63 @@
+{
+  "version": "1.0.2",
+  "releaseDate": "2025-01-21",
+  "title": "Atualização 1.0.2 - Melhorias de Interface e Sistema de Atualização",
+  "description": "Esta atualização traz melhorias significativas na interface do usuário e aprimoramentos no sistema de atualização automática.",
+  "features": [
+    {
+      "title": "🔄 Botão de Atualização no Cabeçalho",
+      "description": "Novo botão de atualização integrado ao cabeçalho da aplicação para acesso rápido às atualizações disponíveis."
+    },
+    {
+      "title": "🎯 Indicador Visual de Atualização",
+      "description": "Ponto de notificação visual que aparece quando uma nova atualização está disponível."
+    }
+  ],
+  "improvements": [
+    {
+      "title": "📏 Modal de Gerenciamento Redimensionado",
+      "description": "O modal de gerenciamento de usuários foi redimensionado para ser maior (1200px de largura, 90vh de altura), similar ao modal do mapa, eliminando a necessidade de barras de rolagem verticais."
+    },
+    {
+      "title": "🎨 Interface Mais Limpa",
+      "description": "Remoção de barras de rolagem desnecessárias no modal principal, mantendo apenas rolagem interna na tabela quando necessário."
+    },
+    {
+      "title": "📱 Responsividade Aprimorada",
+      "description": "Melhorias na responsividade do modal de gerenciamento para dispositivos móveis e diferentes resoluções."
+    },
+    {
+      "title": "🔄 Sistema de Atualização Integrado",
+      "description": "Melhor integração entre o sistema de verificação de atualizações e a interface do usuário."
+    }
+  ],
+  "bugFixes": [
+    {
+      "title": "🐛 Correção de Layout do Modal",
+      "description": "Resolvidos problemas de layout no modal de gerenciamento que causavam sobreposição de elementos."
+    },
+    {
+      "title": "🔄 Sincronização de Estado de Atualização",
+      "description": "Correção na sincronização entre o estado do sistema de atualização e a exibição do botão no cabeçalho."
+    },
+    {
+      "title": "📐 Ajustes de Dimensionamento",
+      "description": "Correções nos cálculos de dimensionamento dos modais para melhor aproveitamento do espaço disponível."
+    }
+  ],
+  "technicalDetails": {
+    "compatibility": "Windows 10 e 11",
+    "requirements": "Node.js 16.0.0 ou superior",
+    "size": "~45MB",
+    "architecture": "x64"
+  },
+  "installation": {
+    "automatic": "A atualização será aplicada automaticamente quando disponível",
+    "manual": "Baixe o instalador mais recente do GitHub Releases"
+  },
+  "notes": [
+    "Esta atualização melhora significativamente a experiência do usuário com interfaces mais limpas e intuitivas",
+    "O novo sistema de notificação de atualizações torna mais fácil manter o software sempre atualizado",
+    "Recomendamos reiniciar a aplicação após a instalação para garantir que todas as melhorias sejam aplicadas"
+  ]
+}

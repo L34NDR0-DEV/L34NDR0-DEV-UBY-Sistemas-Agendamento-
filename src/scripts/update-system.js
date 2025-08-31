@@ -281,6 +281,11 @@ class ModernUpdateSystem {
         const badge = document.getElementById('update-badge');
         if (badge) badge.style.display = 'block';
         
+        // Mostrar botão de atualização no header
+        if (window.showUpdateButton) {
+            window.showUpdateButton();
+        }
+        
         // Notificação do sistema (se disponível)
         if (window.Notification && Notification.permission === 'granted') {
             new Notification('Atualização Disponível', {
@@ -327,6 +332,10 @@ class ModernUpdateSystem {
                 statusIcon.innerHTML = window.UpdateIcons.check;
                 statusText.textContent = 'Aplicação está atualizada!';
                 checkBtn.disabled = false;
+                // Ocultar botão de atualização no header
+                if (window.hideUpdateButton) {
+                    window.hideUpdateButton();
+                }
                 break;
                 
             case 'downloading':
@@ -352,6 +361,10 @@ class ModernUpdateSystem {
                 statusText.textContent = 'Sistema de atualizações desabilitado';
                 checkBtn.disabled = true;
                 checkBtn.style.display = 'none';
+                // Ocultar botão de atualização no header
+                if (window.hideUpdateButton) {
+                    window.hideUpdateButton();
+                }
                 break;
                 
             case 'error':
@@ -359,6 +372,10 @@ class ModernUpdateSystem {
                 statusText.textContent = `Erro: ${data.error || 'Erro desconhecido'}`;
                 checkBtn.disabled = false;
                 installBtn.disabled = false;
+                // Ocultar botão de atualização no header
+                if (window.hideUpdateButton) {
+                    window.hideUpdateButton();
+                }
                 break;
         }
     }

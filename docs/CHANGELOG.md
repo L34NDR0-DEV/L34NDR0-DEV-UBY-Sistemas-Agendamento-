@@ -2,6 +2,43 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [1.0.2] - 2025-01-21
+
+### 🔄 Sistema de Atualização Aprimorado
+- **Botão de Atualização no Cabeçalho**: Novo botão integrado ao cabeçalho da aplicação
+  - Acesso rápido às atualizações disponíveis
+  - Indicador visual com ponto de notificação
+  - Integração completa com sistema de verificação automática
+- **Sincronização de Estado**: Melhor sincronização entre verificação e interface
+  - Exibição automática quando atualização disponível
+  - Ocultação automática quando sistema atualizado
+  - Estados claros para diferentes situações (erro, desabilitado, atualizado)
+
+### 🎨 Melhorias de Interface
+- **Modal de Gerenciamento Redimensionado**: Ajustes significativos no modal de usuários
+  - Largura aumentada de 900px para 1200px (similar ao modal do mapa)
+  - Altura aumentada de 80vh para 90vh
+  - Largura responsiva de 90% para 95%
+  - Eliminação de barras de rolagem verticais desnecessárias
+- **Layout Flexível**: Implementação de layout flexbox
+  - Container principal com display flex e flex-direction column
+  - Tabela com flex: 1 para ocupar espaço disponível
+  - Rolagem interna apenas quando necessário
+- **Responsividade Aprimorada**: Melhorias para dispositivos móveis
+  - Configurações específicas para telas menores
+  - Manutenção da consistência visual em diferentes resoluções
+
+### 🐛 Correções de Bugs
+- **Layout do Modal**: Resolvidos problemas de sobreposição de elementos
+- **Dimensionamento**: Correções nos cálculos de espaço disponível
+- **Integração de Componentes**: Melhor comunicação entre sistema de atualização e interface
+
+### 🔧 Melhorias Técnicas
+- **Funções Globais**: Criação de funções showUpdateButton() e hideUpdateButton()
+- **Event Listeners**: Implementação de listener para botão de atualização
+- **CSS Flexbox**: Migração para layout mais moderno e flexível
+- **Media Queries**: Ajustes específicos para diferentes tamanhos de tela
+
 ## [1.0.1] - 2025-01-30
 
 ### 🗺️ Sistema de Conversão de Coordenadas

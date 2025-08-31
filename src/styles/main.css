@@ -596,6 +596,35 @@ body.fullscreen-mode {
     flex-shrink: 0;
 }
 
+/* Botão de Atualização */
+.update-btn {
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8f00 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    position: relative;
+}
+
+.update-btn:hover {
+    background: linear-gradient(135deg, #ff7c11 0%, #ffa011 100%);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+}
+
+.update-notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #ff4444;
+    border-radius: 50%;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+    display: none;
+}
+
+.update-notification-dot.show {
+    display: block;
+}
+
 /* Botão de status de conexão */
 .connection-btn {
     background: rgba(39, 174, 96, 0.2);
@@ -5974,10 +6003,12 @@ body.fullscreen-mode::before {
 
 /* Estilos do Modal de Gerenciamento de Usuários */
 .user-management-modal {
-    max-width: 900px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-width: 1200px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .user-management-controls {
@@ -5988,10 +6019,13 @@ body.fullscreen-mode::before {
 
 .users-table-container {
     overflow-x: auto;
+    overflow-y: auto;
     border-radius: 12px;
     border: 1px solid rgba(255, 107, 0, 0.2);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     background: #ffffff;
+    flex: 1;
+    min-height: 0;
 }
 
 .users-table {
@@ -6271,6 +6305,9 @@ body.fullscreen-mode::before {
     .user-management-modal {
         width: 95%;
         max-height: 90vh;
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: column;
     }
     
     .users-table-container {

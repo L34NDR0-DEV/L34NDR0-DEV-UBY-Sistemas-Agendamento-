@@ -1,6 +1,6 @@
 {
   "name": "uby-agendamentos",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sistema profissional de gestão de agendamentos para Windows 10 e 11",
   "main": "app/main.js",
   "author": "L34NDR0-DEV",
@@ -58,10 +58,10 @@
     "nodeGypRebuild": false,
     "npmRebuild": false,
     "files": [
-      "UBY-App-Cliente/app/**/*",
-      "UBY-App-Cliente/src/**/*",
-      "UBY-App-Cliente/assets/**/*",
-      "UBY-App-Cliente/data/**/*",
+      "app/**/*",
+      "src/**/*",
+      "assets/**/*",
+      "data/**/*",
       "package.json"
     ],
     "publish": {
@@ -84,7 +84,7 @@
           ]
         }
       ],
-      "icon": "UBY-App-Cliente/assets/logo.ico",
+      "icon": "assets/logo.ico",
       "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
