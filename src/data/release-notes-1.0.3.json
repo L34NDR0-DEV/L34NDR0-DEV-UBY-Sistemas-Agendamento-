@@ -1,0 +1,57 @@
+{
+  "version": "1.0.3",
+  "releaseDate": "2025-01-21",
+  "title": "Correções de Bugs e Melhorias",
+  "description": "Esta versão inclui importantes correções de bugs e melhorias na funcionalidade de voz.",
+  "features": [
+    {
+      "title": "🔧 Correção do Sistema de Voz",
+      "description": "Corrigido problema onde o nome do atendente não era falado nas notificações, mesmo com a opção ativada",
+      "type": "bugfix"
+    },
+    {
+      "title": "📁 Correção de Caminhos de Arquivos",
+      "description": "Corrigidos caminhos incorretos para icons.js e update-icons.js que causavam erros de carregamento",
+      "type": "bugfix"
+    },
+    {
+      "title": "🎨 Adição de Estilos de Ícones",
+      "description": "Adicionada referência ao icons.css para garantir carregamento correto dos estilos SVG",
+      "type": "improvement"
+    },
+    {
+      "title": "🔌 Integração WebSocket",
+      "description": "Adicionado websocket-client.js ao carregamento principal para melhor conectividade",
+      "type": "improvement"
+    }
+  ],
+  "bugfixes": [
+    {
+      "issue": "Nome do atendente não sendo falado",
+      "solution": "Corrigida passagem do parâmetro atendente na função speakAgendamentoCriado",
+      "files": ["src/scripts/main.js", "src/scripts/voice-manager.js"]
+    },
+    {
+      "issue": "Erros ERR_FILE_NOT_FOUND",
+      "solution": "Corrigidos caminhos relativos incorretos para arquivos de assets",
+      "files": ["src/views/main.html", "src/scripts/updater.js"]
+    }
+  ],
+  "technicalChanges": [
+    "Atualizada função TTSNotifications.agendamentoCriado para aceitar parâmetro atendente",
+    "Corrigido caminho de ../../assets/icons.js para ../assets/icons.js",
+    "Corrigido caminho de ../../assets/icons/update-icons.js para ../assets/icons/update-icons.js",
+    "Adicionada referência ao icons.css no main.html",
+    "Adicionada referência ao websocket-client.js no main.html"
+  ],
+  "compatibility": {
+    "windows": "10, 11",
+    "node": ">=16.0.0",
+    "electron": "Compatible"
+  },
+  "notes": [
+    "Esta versão resolve problemas críticos de funcionalidade de voz",
+    "Melhora a estabilidade geral da aplicação",
+    "Recomendada atualização para todos os usuários"
+  ]
+}

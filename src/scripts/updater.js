@@ -12,7 +12,7 @@
 
 // Carregar ícones profissionais
 const script = document.createElement('script');
-script.src = '../../assets/icons/update-icons.js';
+script.src = '../assets/icons/update-icons.js';
 document.head.appendChild(script);
 
 // Utilitário para obter ipcRenderer de forma segura

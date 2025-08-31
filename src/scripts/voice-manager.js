@@ -601,7 +601,7 @@ window.speakText = (text, options) => voiceManager.speak(text, options);
 
 // Notificações específicas do sistema
 window.TTSNotifications = {
-    agendamentoCriado: (nomeCliente, horario, cidade) => voiceManager.speakAgendamentoCriado(nomeCliente, horario, cidade),
+    agendamentoCriado: (nomeCliente, horario, cidade, atendente) => voiceManager.speakAgendamentoCriado(nomeCliente, horario, cidade, atendente),
     agendamentoConcluido: (nomeCliente) => voiceManager.speakAgendamentoConcluido(nomeCliente),
     agendamentoProximo: (nomeCliente, minutosRestantes) => voiceManager.speakAgendamentoProximo(nomeCliente, minutosRestantes),
     agendamentoAtrasado: (nomeCliente, minutosAtraso) => voiceManager.speakAgendamentoAtrasado(nomeCliente, minutosAtraso),

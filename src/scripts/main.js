@@ -779,7 +779,8 @@ async function handleCreateAgendamento(e) {
                 window.voiceManager.speakAgendamentoCriado(
                     agendamento.nomeCliente,
                     agendamento.horario,
-                    agendamento.cidade
+                    agendamento.cidade,
+                    atendenteValue
                 );
             }
             
