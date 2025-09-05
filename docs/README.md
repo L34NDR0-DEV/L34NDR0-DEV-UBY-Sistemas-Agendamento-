@@ -1,6 +1,6 @@
 # UBY - Sistema de Agendamento
 
-**Versão 1.0.1** - Sistema completo de agendamento com arquitetura distribuída cliente-servidor, sincronização em tempo real, proteção DDoS avançada e funcionalidades de segurança empresarial.
+**Versão 1.0.5** - Sistema completo de agendamento com arquitetura distribuída cliente-servidor, sincronização em tempo real, proteção DDoS avançada, funcionalidades de segurança empresarial e otimizações de performance.
 
 ## 📋 Descrição
 
@@ -46,6 +46,77 @@ O sistema implementa sincronização automática e em tempo real:
 - **Histórico de Edições**: Rastreamento completo de mudanças com auditoria
 - **Sistema de Transferência**: Compartilhamento de agendamentos entre usuários
 - **Cache Offline**: Funcionamento completo sem conexão com internet
+
+## 🚀 Funcionalidades Principais
+
+### 📅 Sistema de Agendamentos Avançado
+- **Interface Post-it Colorida**: Visualização intuitiva com sistema de cores personalizáveis por categoria
+- **Gestão Completa CRUD**: Criar, editar, visualizar e excluir agendamentos com validações inteligentes
+- **Status Dinâmicos**: Pendente, Confirmado, Cancelado, Concluído com transições automáticas
+- **Filtros Inteligentes**: Por data, cliente, status, tipo de serviço e profissional responsável
+- **Busca Avançada**: Localização rápida por múltiplos critérios com auto-complete
+- **Calendário Interativo**: Visualização mensal, semanal e diária com drag-and-drop
+- **Recorrência de Agendamentos**: Criação de eventos repetitivos com padrões personalizados
+- **Bloqueio de Horários**: Sistema para marcar indisponibilidades e feriados
+
+### 🔔 Sistema de Notificações Inteligentes
+- **Alertas Visuais Personalizados**: Pop-ups com diferentes níveis de prioridade e cores
+- **Notificações Sonoras**: Biblioteca extensiva de sons configuráveis por tipo de evento
+- **Sistema de Voz Dual**: Text-to-Speech com múltiplas vozes, incluindo voz especializada para Aquidauana
+- **Lembretes Automáticos**: Configuração de múltiplos intervalos (15min, 1h, 1 dia antes)
+- **Notificações Persistentes**: Sistema que mantém alertas ativos até confirmação manual
+- **Escalação de Alertas**: Intensificação automática para agendamentos críticos
+- **Notificações por Email**: Envio automático de confirmações e lembretes
+
+### 👥 Gestão Completa de Clientes
+- **CRUD Avançado**: Cadastro completo com validações e campos personalizáveis
+- **Histórico Detalhado**: Rastreamento completo de todos os agendamentos por cliente
+- **Perfil do Cliente**: Informações detalhadas, preferências, observações e fotos
+- **Integração WhatsApp**: Envio direto de mensagens personalizadas com templates
+- **Sistema de Fidelidade**: Controle de pontos e benefícios por cliente
+- **Aniversários e Datas**: Lembretes automáticos de datas importantes
+- **Relatórios de Cliente**: Análises de frequência, gastos e preferências
+
+### 🔒 Segurança e Autenticação Empresarial
+- **Sistema Multi-usuário**: Suporte a diferentes perfis de acesso (Admin, Operador, Visualizador)
+- **Proteção DDoS Avançada**: Rate limiting inteligente e proteção contra ataques distribuídos
+- **Logs de Segurança**: Monitoramento detalhado de todas as atividades do sistema
+- **Backup Automático**: Sistema de backup incremental com redundância
+- **Criptografia de Dados**: Proteção end-to-end de informações sensíveis
+- **Sessões Seguras**: Controle de timeout e invalidação automática
+- **Auditoria Completa**: Rastreamento de todas as alterações com timestamp
+
+### 🌐 Conectividade e Sincronização
+- **WebSocket em Tempo Real**: Sincronização instantânea entre múltiplos clientes
+- **Modo Offline Completo**: Funcionamento total sem conexão com queue de sincronização
+- **Sincronização Inteligente**: Resolução automática de conflitos quando a conexão é restaurada
+- **API RESTful**: Integração completa com sistemas externos e terceiros
+- **Cache Inteligente**: Sistema de cache multinível para performance otimizada
+- **Replicação de Dados**: Sincronização automática entre diferentes dispositivos
+
+### 📊 Relatórios e Analytics
+- **Dashboard Executivo**: Visão geral com KPIs e métricas importantes
+- **Relatórios Personalizados**: Geração de relatórios por período, cliente ou serviço
+- **Análise de Performance**: Métricas de ocupação, receita e eficiência
+- **Exportação Avançada**: PDF, Excel, CSV com formatação profissional
+- **Gráficos Interativos**: Visualizações dinâmicas de dados e tendências
+- **Previsões**: Sistema de análise preditiva para otimização de agenda
+
+### 🎨 Interface e Experiência do Usuário
+- **Design Responsivo**: Adaptação automática para desktop, tablet e mobile
+- **Temas Personalizáveis**: Modo claro, escuro e temas customizados
+- **Acessibilidade**: Suporte completo a leitores de tela e navegação por teclado
+- **Atalhos de Teclado**: Navegação rápida com shortcuts personalizáveis
+- **Drag and Drop**: Interface intuitiva para reorganização de agendamentos
+- **Zoom e Acessibilidade**: Controles de zoom e contraste para diferentes necessidades
+
+### 🔧 Configurações e Personalização
+- **Configurações Granulares**: Controle detalhado de todos os aspectos do sistema
+- **Perfis de Configuração**: Diferentes configurações por usuário ou departamento
+- **Importação/Exportação**: Backup e restauração de configurações
+- **Integração com Calendários**: Sincronização com Google Calendar, Outlook
+- **Webhooks**: Notificações automáticas para sistemas externos
+- **Plugins**: Sistema extensível para funcionalidades adicionais
 
 ### 🛡️ Segurança e Proteção DDoS (v1.0.7)
 - **Rate Limiting HTTP**: Sistema avançado de controle de requisições
@@ -301,15 +372,41 @@ UBY-Servidor/
 
 ## 📋 Changelog
 
+### Versão 1.0.5 - Otimizações e Correções (Atual)
+- **🔧 Correções de Assinatura Digital**: Desabilitação completa da assinatura de código para resolver problemas de build
+- **🎨 Atualização de Interface**: Versão atualizada na tela de login (V1.0.5)
+- **🏷️ Organização de Tags Git**: Reorganização completa das tags de versionamento (v1.0.1 a v1.0.5)
+- **📦 Otimização de Build**: Configurações aprimoradas do electron-builder para builds mais estáveis
+- **🔒 Configurações de Segurança**: Ajustes nas configurações de certificado e assinatura
+- **📝 Documentação Atualizada**: README expandido com todas as funcionalidades e melhorias
+- **🚀 Performance**: Otimizações gerais de performance e estabilidade
+
+### Versão 1.0.4 - Melhorias de Estabilidade
+- **🛠️ Correções de Bugs**: Resolução de problemas críticos de estabilidade
+- **📊 Melhorias de Performance**: Otimizações no sistema de cache e sincronização
+- **🔄 Atualizações de Dependências**: Atualização de bibliotecas para versões mais seguras
+
+### Versão 1.0.3 - Funcionalidades Avançadas
+- **🌐 Sistema WebSocket Aprimorado**: Melhorias na sincronização em tempo real
+- **🔊 Sistema de Voz Dual**: Implementação do sistema especializado para Aquidauana
+- **📱 Interface Responsiva**: Otimizações para diferentes tamanhos de tela
+
+### Versão 1.0.2 - Segurança e Proteção
+- **🛡️ Proteção DDoS Avançada**: Sistema completo de rate limiting e proteção
+- **🔐 Autenticação Melhorada**: Sistema de login multi-usuário aprimorado
+- **📊 Monitoramento de Segurança**: Logs detalhados e métricas de segurança
+
+### Versão 1.0.1 - Funcionalidades Essenciais
+- **📋 Sistema de Agendamentos**: Gestão completa com interface post-it colorida
+- **🔔 Notificações Inteligentes**: Sistema de alertas e lembretes automáticos
+- **🎯 Filtros Avançados**: Busca inteligente por múltiplos critérios
+- **💬 Integração WhatsApp**: Envio direto de mensagens personalizadas
+
 ### Versão 1.0.0 - Release Inicial
-- **Sistema Completo de Agendamentos**: Gestão completa de agendamentos com interface moderna
-- **Notificações em Tempo Real**: Sistema de alertas e lembretes automáticos
-- **Interface Responsiva**: Design moderno e intuitivo para diferentes dispositivos
-- **Sistema de Voz**: Notificações por voz com suporte a múltiplas vozes
-- **Gestão de Clientes**: CRUD completo para clientes e agendamentos
-- **Filtros Avançados**: Sistema de busca e filtros por data, status e cliente
-- **Exportação de Dados**: Funcionalidades de backup e exportação
-- **Configurações Personalizáveis**: Ajustes de som, voz e notificações
+- **🚀 Lançamento**: Primeira versão estável do sistema
+- **🏗️ Arquitetura Base**: Implementação da arquitetura cliente-servidor
+- **💾 Persistência de Dados**: Sistema de armazenamento local com Electron Store
+- **🎨 Interface Moderna**: Design inicial com tema claro/escuro
 
 ## 🤝 Contribuição
 
