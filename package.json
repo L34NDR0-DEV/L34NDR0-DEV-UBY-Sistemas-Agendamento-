@@ -85,7 +85,7 @@
           ]
         }
       ],
-      "icon": "assets/logo.png",
+      "icon": "assets/logo.ico",
       "requestedExecutionLevel": "asInvoker",
       "signAndEditExecutable": false,
       "signDlls": false,
