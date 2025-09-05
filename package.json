@@ -85,10 +85,12 @@
           ]
         }
       ],
-      "icon": "assets/logo.ico",
+      "icon": "assets/logo.png",
       "requestedExecutionLevel": "asInvoker",
       "signAndEditExecutable": false,
-      "signDlls": false
+      "signDlls": false,
+      "certificateFile": null,
+      "certificatePassword": null
     },
     "nsis": {
       "oneClick": false,
