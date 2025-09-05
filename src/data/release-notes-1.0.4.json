@@ -1,0 +1,64 @@
+{
+  "version": "1.0.4",
+  "releaseDate": "2025-01-21",
+  "title": "Atualização de Gerenciamento de Usuários e Melhorias",
+  "description": "Nova versão com melhorias significativas no sistema de usuários e otimizações gerais.",
+  "features": [
+    {
+      "title": "Gerenciamento Avançado de Usuários",
+      "description": "Sistema aprimorado para adicionar, remover e promover usuários com maior facilidade",
+      "type": "feature"
+    },
+    {
+      "title": "Novos Usuários Atendentes",
+      "description": "Adicionados novos usuários: Letícia, Pedro e João Victor como atendentes",
+      "type": "addition"
+    },
+    {
+      "title": "Promoção de Usuário",
+      "description": "Guilherme promovido de Atendente para Suporte",
+      "type": "update"
+    }
+  ],
+  "improvements": [
+    {
+      "title": "Limpeza de Base de Dados",
+      "description": "Remoção de usuários inativos para otimizar performance",
+      "type": "optimization"
+    },
+    {
+      "title": "Estrutura de Dados Aprimorada",
+      "description": "Melhorias na organização e integridade dos dados de usuários",
+      "type": "improvement"
+    },
+    {
+      "title": "Preparação para SQLite",
+      "description": "Estrutura preparada para migração futura do Electron Store para SQLite",
+      "type": "preparation"
+    }
+  ],
+  "bugfixes": [
+    {
+      "title": "Correção de Inconsistências",
+      "description": "Corrigidas inconsistências na base de dados de usuários",
+      "type": "bugfix"
+    }
+  ],
+  "technical": [
+    {
+      "title": "Dependências Atualizadas",
+      "description": "Atualização de dependências para melhor compatibilidade",
+      "type": "technical"
+    },
+    {
+      "title": "Preparação para Build",
+      "description": "Otimizações para processo de build e distribuição",
+      "type": "technical"
+    }
+  ],
+  "notes": [
+    "Esta versão foca em melhorias de gerenciamento de usuários",
+    "Preparação para futuras migrações de banco de dados",
+    "Otimizações de performance e estabilidade"
+  ]
+}

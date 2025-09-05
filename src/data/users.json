@@ -9,14 +9,6 @@
       "status": "ativo"
     },
     {
-      "id": 2,
-      "username": "Bruno Antônio",
-      "password": "062542",
-      "role": "Sênior",
-      "displayName": "Bruno Antônio",
-      "status": "excluido"
-    },
-    {
       "id": 4,
       "username": "Otávio",
       "password": "498732",
@@ -68,7 +60,7 @@
       "id": 10,
       "username": "Guilherme",
       "password": "256991",
-      "role": "Atendente",
+      "role": "Suporte",
       "displayName": "Guilherme",
       "status": "ativo"
     },
@@ -102,6 +94,30 @@
       "password": "228166",
       "role": "Suporte",
       "displayName": "Mauri",
+      "status": "ativo"
+    },
+    {
+      "id": 15,
+      "username": "Letícia",
+      "password": "854571",
+      "role": "Atendente",
+      "displayName": "Letícia",
+      "status": "ativo"
+    },
+    {
+      "id": 16,
+      "username": "Pedro",
+      "password": "771594",
+      "role": "Atendente",
+      "displayName": "Pedro",
+      "status": "ativo"
+    },
+    {
+      "id": 17,
+      "username": "João Victor",
+      "password": "448845",
+      "role": "Atendente",
+      "displayName": "João Victor",
       "status": "ativo"
     }
   ]
